@@ -1,12 +1,12 @@
 const CommentService = require('../services/comment.service');
-
+const { SECRET_SUM } = process.env;
 class CommentController {
   commentService = new CommentService();
 
   createComment = async (req, res, next) => {
     const { comment } = req.body;
     const { postId } = req.params;
-    const userId = res.locals.userId;
+    const userId = res.locals.userId - SECRET_SUM;
 
     try {
       await this.commentService.createComment(comment, userId, postId);
@@ -36,7 +36,7 @@ class CommentController {
   updateComment = async (req, res, next) => {
     const { comment } = req.body;
     const { commentId } = req.params;
-    const userId = res.locals.userId;
+    const userId = res.locals.userId - SECRET_SUM;
     try {
       await this.commentService.updateComment(commentId, userId, comment);
 
@@ -50,7 +50,7 @@ class CommentController {
 
   deleteComment = async (req, res, next) => {
     const { commentId } = req.params;
-    const userId = res.locals.userId;
+    const userId = res.locals.userId - SECRET_SUM;
 
     try {
       await this.commentService.deleteComment(commentId, userId);
