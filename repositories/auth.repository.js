@@ -13,7 +13,6 @@ class AuthRepository {
   // 닉네임 중복 체크
   checkNickname = async (nickname) => {
     const nicknameVal = await this.usersModel.findOne({ where: { nickname } });
-
     return nicknameVal;
   };
 
