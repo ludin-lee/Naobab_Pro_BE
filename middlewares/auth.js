@@ -18,6 +18,7 @@ module.exports = async (req, res, next) => {
     const { userId } = jwt.verify(tokenValue, SECRET_KEY);
     Users.findByPk(userId).then((user) => {
       res.locals.userId = user.userId;
+      res.locals.nickname = user.nickname;
       next();
     });
   } catch (err) {

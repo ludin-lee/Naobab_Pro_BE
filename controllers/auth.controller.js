@@ -64,9 +64,10 @@ class AuthController {
   //로그인
   login = async (req, res, next) => {
     try {
-      const { email, password } = await loginRequestSchema.validateAsync(
-        req.body,
-      ); // body required검증
+      // const { email, password } = await loginRequestSchema.validateAsync(
+      //   req.body,
+      // ); // body required검증
+      const { email, password } = req.body;
 
       const accessToken = await this.authService.login(email, password); // 토큰 받아오기
       res.header('token', `Bearer ${accessToken}`);
@@ -74,6 +75,8 @@ class AuthController {
       res
         .status(200)
         .json({ result: true, message: '로그인 성공', token: accessToken });
+
+      return;
     } catch (err) {
       logger.error(err.message);
       return res
