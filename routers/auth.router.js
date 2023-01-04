@@ -23,11 +23,4 @@ router.get(
   SocialLogin.ResponseToken,
 );
 
-router.get('/login/google', SocialLogin.Google);
-router.get(
-  '/login/google/callback',
-  SocialLogin.GoogleCallBack,
-  SocialLogin.ResponseToken,
-);
-
 module.exports = router;

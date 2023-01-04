@@ -17,7 +17,8 @@ module.exports = async (req, res, next) => {
     // 해당하는 jwt 가 유효한가에 대한 검증과 복호화
     const { userId } = jwt.verify(tokenValue, SECRET_KEY);
     Users.findByPk(userId).then((user) => {
-      res.locals.user = user;
+      res.locals.userId = user.userId;
+      res.locals.nickname = user.nickname;
       next();
     });
   } catch (err) {
