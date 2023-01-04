@@ -13,6 +13,10 @@ class BookmarkService {
   // diaryRepository = new DiaryRepository(Diary);
   // postRepository = new PostRepository(Post);
 
+  findAllDiaryBookmark = async (userId) => {
+    return await this.bookmarkRepository.findAllDiaryBookmark(userId);
+  };
+
   findDiaryBookmark = async (diaryId, userId) => {
     return await this.bookmarkRepository.findDiaryBookmark(diaryId, userId);
   };
@@ -32,6 +36,10 @@ class BookmarkService {
     // if (exDiary.userId !== userId)
     //   throw new AuthorizationError('권한이 없습니다');
     await this.bookmarkRepository.deleteDiaryBookmark(diaryId, userId);
+  };
+
+  findAllPostBookmark = async (diaryId, userId) => {
+    return await this.bookmarkRepository.findAllPostBookmark(diaryId, userId);
   };
 
   findPostBookmark = async (postId, userId) => {

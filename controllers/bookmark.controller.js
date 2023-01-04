@@ -3,6 +3,13 @@ const { SECRET_SUM } = process.env;
 class BookmarkController {
   bookmarkService = new BookmarkService();
 
+  findDiaryBookmark = async (req, res) => {
+    const userId = res.locals.userId - SECRET_SUM;
+
+    const exBookmark = await this.bookmarkService.findAllDiaryBookmark(userId);
+    return res.status(200).json({ Bookmark_Diaries: exBookmark });
+  };
+
   createDiaryBookmark = async (req, res) => {
     const { diaryId } = req.params;
     const userId = res.locals.userId - SECRET_SUM;
@@ -30,6 +37,17 @@ class BookmarkController {
         message: err.message || '북마크 저장에 실패하였습니다.',
       });
     }
+  };
+
+  findPostBookmark = async (req, res) => {
+    const { diaryId } = req.params;
+    const userId = res.locals.userId - SECRET_SUM;
+
+    const exBookmark = await this.bookmarkService.findAllPostBookmark(
+      diaryId,
+      userId,
+    );
+    return res.status(200).json({ exBookmark });
   };
 
   createPostBookmark = async (req, res) => {
