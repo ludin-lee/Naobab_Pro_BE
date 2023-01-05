@@ -10,7 +10,6 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "app-root-path": "^3.1.0",
     "aws-sdk": "^2.1280.0",
     "bcrypt": "^5.1.0",
     "bcryptjs": "^2.4.3",
@@ -27,7 +26,6 @@
     "passport": "^0.6.0",
     "passport-kakao": "^1.0.1",
     "passport-local": "^1.0.0",
-    "path": "^0.12.7",
     "process": "^0.11.10",
     "winston": "^3.8.2",
     "winston-daily-rotate-file": "^4.7.1"
