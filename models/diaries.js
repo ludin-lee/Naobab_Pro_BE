@@ -31,12 +31,12 @@ module.exports = (sequelize, DataTypes) => {
       },
       outsideColor: {
         type: DataTypes.STRING,
-        allowNull: false,
+        allowNull: true,
         defaultValue: 'white',
       },
       insideColor: {
         type: DataTypes.STRING,
-        allowNull: false,
+        allowNull: true,
         defaultValue: 'white',
       },
       sticker: {
