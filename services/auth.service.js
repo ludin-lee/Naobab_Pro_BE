@@ -1,10 +1,11 @@
 const bcrypt = require('bcryptjs');
-const { SECRET_KEY, PASSWORD_SALT } = process.env;
+const { SECRET_KEY, SECRET_SUM, PASSWORD_SALT } = process.env;
 const jwt = require('jsonwebtoken');
 const { Users } = require('../models');
 const {
   ValidationError,
   DuplicateError,
+  BadRequestError,
 } = require('../exceptions/index.exception');
 const AuthRepository = require('../repositories/auth.repository');
 
@@ -58,23 +59,24 @@ class AuthService {
 
   //로그인
   login = async (email, password) => {
-    const loginVal = await this.authRepository.login(email, password);
-    const checkPassword = await bcrypt.compare(password, loginVal.password);
+    const loginVal = await this.authRepository.login(email);
+    if (loginVal.social !== true) {
+      const checkPassword = await bcrypt.compare(password, loginVal.password);
+      if (email !== loginVal.email || !checkPassword)
+        throw new ValidationError('이메일 또는 패스워드를 확인해주세요.');
+    } else
+      throw new BadRequestError('해당 아이디는 소셜로그인으로 시도해주세요.');
 
-    if (email !== loginVal.email || !checkPassword) {
-      throw new ValidationError('이메일 또는 패스워드를 확인해주세요.');
-    }
-    const token = jwt.sign(
+    const accessToken = jwt.sign(
       {
-        userId: loginVal.userId,
+        userId: loginVal.userId + parseInt(SECRET_SUM),
         email: loginVal.email,
         nickname: loginVal.nickname,
-        profileImg: loginVal.profileImg,
       },
       SECRET_KEY,
-      { expiresIn: '1hr' },
+      { expiresIn: '1h' },
     );
-    return token;
+    return accessToken;
   };
 }
 
