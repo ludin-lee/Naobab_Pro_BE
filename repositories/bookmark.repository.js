@@ -20,7 +20,6 @@ class BookmarkRepository {
   };
 
   createDiaryBookmark = async (diaryId, userId) => {
-    console.log(diaryId, userId);
     await this.bookmarkDiaryModel.create({
       diaryId,
       userId,

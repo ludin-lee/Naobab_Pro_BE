@@ -19,6 +19,7 @@ class CommentRepository {
     LEFT JOIN Users
     On Comments.userId = Users.userId
     WHERE Comments.postId = ${postId}`;
+
     const queryResult = await sequelize.query(query, {
       type: QueryTypes.SELECT,
     });
