@@ -10,20 +10,23 @@ class DiaryController {
     try {
       const userId = res.locals.userId - SECRET_SUM;
       const { couple, diaryName, outsideColor } = req.body;
-      console.log(userId);
-      console.log(res.locals);
+
       await this.diaryService.createDiary(
         userId,
         couple,
         diaryName,
         outsideColor,
       );
+
       return res
         .status(201)
         .json({ message: '다이어리 생성 성공', result: true });
-    } catch (error) {
-      // console.log(error);
-      return res.status(400).json({ errorMessage: '다이어리 생성 실패' });
+    } catch (err) {
+      logger.error(err.message || err);
+      return res.status(err.status || 500).json({
+        result: false,
+        message: err.message || '다이얼 생성에 실패하였습니다.',
+      });
     }
   };
 
@@ -32,10 +35,14 @@ class DiaryController {
     try {
       const userId = res.locals.userId - SECRET_SUM;
       const diary = await this.diaryService.findDiary(userId);
+
       return res.status(200).json({ data: diary, result: true });
-    } catch (error) {
-      console.log(error);
-      res.status(400).json({ errorMessage: '다이어리 조회 실패' });
+    } catch (err) {
+      logger.error(err.message || err);
+      return res.status(err.status || 500).json({
+        result: false,
+        message: err.message || '다이어리 조회에 실패하였습니다.',
+      });
     }
   };
 
@@ -45,6 +52,7 @@ class DiaryController {
       const userId = res.locals.userId - SECRET_SUM;
       const { diaryId } = req.params;
       const { couple, diaryName, outsideColor } = req.body;
+
       await this.diaryService.patchDiary(
         userId,
         diaryId,
@@ -52,12 +60,16 @@ class DiaryController {
         diaryName,
         outsideColor,
       );
+
       return res
         .status(201)
         .json({ message: '다이어리 수정 성공', result: true });
-    } catch (error) {
-      console.log(error);
-      res.status(400).json({ errorMessage: '다이어리 수정 실패' });
+    } catch (err) {
+      logger.error(err.message || err);
+      return res.status(err.status || 500).json({
+        result: false,
+        message: err.message || '다이어리 수정에 실패하였습니다.',
+      });
     }
   };
 
@@ -66,13 +78,18 @@ class DiaryController {
     try {
       const userId = res.locals.userId - SECRET_SUM;
       const { diaryId } = req.params;
+
       await this.diaryService.deleteDiary(userId, diaryId);
+
       return res
         .status(201)
         .json({ message: '다이어리 삭제 성공', result: true });
-    } catch (error) {
-      console.log(error);
-      res.status(400).json({ errorMessage: '다이어리 삭제 실패' });
+    } catch (err) {
+      logger.error(err.message || err);
+      return res.status(err.status || 500).json({
+        result: false,
+        message: err.message || '다이어리 삭제에 실패하였습니다.',
+      });
     }
   };
 }
