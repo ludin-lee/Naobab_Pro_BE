@@ -16,7 +16,7 @@ module.exports = async (req, res, next) => {
 
     // 해당하는 jwt 가 유효한가에 대한 검증과 복호화
 
-    const { userId, nickname } = jwt.verify(tokenValue, SECRET_KEY);   
+    const { userId, nickname } = jwt.verify(tokenValue, SECRET_KEY);
     res.locals.userId = userId;
     res.locals.nickname = nickname;
 
