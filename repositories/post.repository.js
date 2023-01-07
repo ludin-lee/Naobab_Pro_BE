@@ -7,7 +7,6 @@ class PostRepository {
 
   //일기장 생성
   createPost = async (userId, diaryId, title, image, content, weather, tag) => {
-    // console.log(weather);
     await Posts.create({
       userId,
       diaryId,
