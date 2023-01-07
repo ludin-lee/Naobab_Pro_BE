@@ -2,7 +2,6 @@ const DiaryRepository = require('../repositories/diary.repository');
 const { Diaries } = require('../models');
 
 const {
-  ValidationError,
   NotFoundError,
   BadRequestError,
 } = require('../exceptions/index.exception');
@@ -15,7 +14,7 @@ class DiaryService {
 
   //다이어리 생성
   createDiary = async (userId, couple, diaryName, outsideColor) => {
-    console.log(couple);
+    // console.log(couple);
     if (!diaryName || !outsideColor || couple === undefined) {
       throw new BadRequestError('모든 항목을 입력해주세요');
     }
@@ -34,7 +33,7 @@ class DiaryService {
     if (!diary) {
       throw new NotFoundError('다이어리가 존재하지 않습니다.');
     }
-    return result;
+    return diary;
   };
 
   //다이어리 수정

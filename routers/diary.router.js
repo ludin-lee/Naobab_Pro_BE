@@ -1,6 +1,5 @@
 const express = require('express');
 const router = express.Router();
-const auth = require('../middlewares/auth');
 
 const DiaryController = require('../controllers/diary.controller');
 const diaryController = new DiaryController();
