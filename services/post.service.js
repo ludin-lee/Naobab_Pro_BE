@@ -1,22 +1,24 @@
 const PostRepository = require('../repositories/post.repository');
-const { Posts } = require('../models');
+const DiaryRepository = require('../repositories/diary.repository');
+const { Posts, Diaries } = require('../models');
 
 const {
-  BadRequestError,
+  ValidationError,
   NotFoundError,
 } = require('../exceptions/index.exception');
+const DiaryRepository = require('../repositories/diary.repository');
 
 class PostService {
   constructor() {
     this.PostRepository = new PostRepository(Posts);
+    this.diaryRepository = new DiaryRepository(Diaries);
   }
   postRepository = new PostRepository();
 
   //일기장 생성
   createPost = async (userId, diaryId, title, image, content, weather, tag) => {
-    if (!title || !content) {
-      throw new BadRequestError('일기를 작성해주세요');
-    }
+    if (!title || !content) throw new ValidationError('일기를 작성해주세요');
+
     await this.postRepository.createPost(
       userId,
       diaryId,
@@ -29,23 +31,45 @@ class PostService {
   };
 
   //일기장 전체 조회
-  findPost = async (diaryId) => {
+  findPost = async (diaryId, userId) => {
     const post = await this.postRepository.findPost(diaryId);
-    if (!post) {
-      throw new NotFoundError('일기장이 존재하지 않습니다.');
-    }
+
+    if (!post.length) throw new NotFoundError('일기장이 존재하지 않습니다.');
+
+    const diary = await this.diaryRepository.exDiary(diaryId);
+
+    if (diary.userId !== userId && invitedId !== userId)
+      throw new AuthorizationError('권한이 없습니다');
+
     return post;
   };
 
-  // //일기장 상세 조회
-  // findDetailPost = async (postId) => {
-  //   const findOnePost = await this.postRepository.findDetailPost(postId);
-  //   return findOnePost;
-  // };
+  //일기장 상세 조회
+  findDetailPost = async (postId, userId) => {
+    const post = await this.postRepository.findDetailPost(postId);
+
+    if (!post) throw new NotFoundError('일기장이 존재하지 않습니다.');
+
+    const diary = await this.diaryRepository.postDiary(postId);
+
+    if (diary.userId !== userId && invitedId !== userId)
+      throw new AuthorizationError('권한이 없습니다');
+
+    return post;
+  };
 
   //일기장 수정
   patchPost = async (userId, postId, title, image, content, weather, tag) => {
-    const updatePost = await this.postRepository.patchPost(
+    const post = await this.postRepository.findDetailPost(postId);
+
+    if (!post) throw new NotFoundError('일기장이 존재하지 않습니다.');
+
+    if (post.userId !== userId) throw new AuthorizationError('권한이 없습니다');
+
+    if (!title || !content || !tag)
+      throw new ValidationError('모든 항목을 입력해주세요.');
+
+    await this.postRepository.patchPost(
       userId,
       postId,
       title,
@@ -54,24 +78,17 @@ class PostService {
       weather,
       tag,
     );
-    return updatePost;
   };
 
   //일기장 삭제
   deletePost = async (userId, postId) => {
-    // const isExistPost = await this.postRepository.findDetailPost({
-    //   postId,
-    // });
-    // if ( userId !== isExistPost.userId )
-    // if (!isExistPost) {
-    //   throw new NotFoundError('일기장이 존재하지 않습니다.');
-    // } else {
-    //   if (isExistPost) {
-    return await this.postRepository.deletePost(postId);
-    //     } else {
-    //       throw new BadRequestError('일기장을 삭제할 수 없습니다.');
-    //     }
-    //   }
+    const post = await this.postRepository.findDetailPost(postId);
+
+    if (!post) throw new NotFoundError('일기장이 존재하지 않습니다.');
+
+    if (post.userId !== userId) throw new AuthorizationError('권한이 없습니다');
+
+    await this.postRepository.deletePost(postId);
   };
 }
 

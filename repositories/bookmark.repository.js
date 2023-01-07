@@ -7,12 +7,6 @@ class BookmarkRepository {
     this.bookmarkPostModel = BookmarkPostModel;
   }
 
-  findAllDiaryBookmark = async (userId) => {
-    return await this.bookmarkDiaryModel.findAll({
-      where: { userId },
-    });
-  };
-
   findDiaryBookmark = async (diaryId, userId) => {
     return await this.bookmarkDiaryModel.findOne({
       where: { diaryId, userId },
@@ -30,17 +24,6 @@ class BookmarkRepository {
     await this.bookmarkDiaryModel.destroy({
       where: { diaryId, userId },
     });
-  };
-
-  findAllPostBookmark = async (diaryId, userId) => {
-    const query = `SELECT bookmarkId,Posts.postId,Posts.diaryId,Bookmark_posts.userId,Bookmark_posts.createdAt
-                   FROM Bookmark_posts LEFT JOIN Posts
-                   ON Bookmark_posts.postId = Posts.postId
-                   WHERE Posts.diaryId = ${diaryId} AND Bookmark_posts.userId = ${userId}`;
-    const queryResult = await sequelize.query(query, {
-      type: QueryTypes.SELECT,
-    });
-    return queryResult;
   };
 
   findPostBookmark = async (postId, userId) => {
