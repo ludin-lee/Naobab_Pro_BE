@@ -33,18 +33,18 @@ module.exports = (sequelize, DataTypes) => {
       },
       title: {
         allowNull: false,
-        type: DataTypes.JSON,
+        type: DataTypes.STRING,
       },
       image: {
         allowNull: true,
         type: DataTypes.STRING,
       },
       content: {
-        allowNull: true,
+        allowNull: false,
         type: DataTypes.STRING,
       },
       weather: {
-        allowNull: false,
+        allowNull: true,
         type: DataTypes.STRING,
         defaultValue: '맑음',
       },

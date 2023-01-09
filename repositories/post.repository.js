@@ -7,7 +7,7 @@ class PostRepository {
 
   //일기장 생성
   createPost = async (userId, diaryId, title, image, content, weather, tag) => {
-    await Posts.create({
+    await this.postModel.create({
       userId,
       diaryId,
       title,
@@ -20,13 +20,13 @@ class PostRepository {
 
   //일기장 전체 조회
   findPost = async (diaryId) => {
-    const post = await Posts.findAll({
+    const post = await this.postModel.findAll({
       where: {
         diaryId,
       },
       attributes: [
         'postId',
-        [Sequelize.col('User.nickname'), 'nickname'], //db생성시에 뭔가 잘못된 것 같음
+        [Sequelize.col('User.nickname'), 'nickname'],
         [Sequelize.col('Diary.insideColor'), 'insideColor'],
         'title',
         'image',
@@ -66,7 +66,7 @@ class PostRepository {
 
   // //일기장 상세 조회
   // findDetailPost = async (postId) => {
-  //   const post = await Posts.findOne({
+  //   const post = await this.postModel.findOne({
   //     where: {
   //       postId: postId,
   //     },
@@ -87,7 +87,7 @@ class PostRepository {
 
   //일기장 수정
   patchPost = async (userId, postId, title, image, content, weather, tag) => {
-    const post = await Posts.update(
+    await this.postModel.update(
       {
         userId,
         title,
@@ -102,20 +102,18 @@ class PostRepository {
         },
       },
     );
-    return post;
   };
 
   //일기장 삭제
   deletePost = async (postId) => {
-    console.log(postId);
-    await Posts.destroy({
+    await this.postModel.destroy({
       where: {
         postId,
       },
     });
   };
+
+  findAllPostBookmark = async (diaryId, userId) => {};
 }
 
 module.exports = PostRepository;
-
-//생성, 수정, 삭제는 변수를 지정해서 바로 리턴하지 않는다.

@@ -40,8 +40,9 @@ class SocialLogin {
           expiresIn: '1h',
         },
       );
+
       res.header('token', `Bearer ${accessToken}`);
-      res
+      return res
         .status(200)
         .json({ result: true, message: '로그인 성공', token: accessToken });
     } else {

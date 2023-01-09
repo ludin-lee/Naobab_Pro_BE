@@ -1,6 +1,5 @@
-const { Model } = require('sequelize');
-const { Diaries } = require('../models');
-
+const { sequelize } = require('../models');
+const { QueryTypes } = require('sequelize');
 class DiaryRepository {
   constructor(DiaryModel) {
     this.diaryModel = DiaryModel;
@@ -8,29 +7,25 @@ class DiaryRepository {
 
   //다이어리 생성
   createDiary = async (userId, couple, diaryName, outsideColor) => {
-    const createDiary = await Diaries.create({
+    await this.diaryModel.create({
       userId,
       couple,
       diaryName,
       outsideColor,
     });
-    return createDiary;
   };
 
   //다이어리 조회
   findDiary = async (userId) => {
-    const diary = await Diaries.findAll({
+    return await this.diaryModel.findAll({
       where: { userId },
-      order: [['diaryId', 'DESC']],
+      order: [['createdAt', 'DESC']],
     });
-    return diary;
   };
 
   //다이어리 수정
   patchDiary = async (userId, diaryId, couple, diaryName, outsideColor) => {
-    // console.log(diaryId);
-    // console.log(userId, diaryId, couple, diaryName, outsideColor);
-    return await Diaries.update(
+    await this.diaryModel.update(
       {
         userId,
         couple,
@@ -43,8 +38,24 @@ class DiaryRepository {
 
   //다이어리 삭제
   deleteDiary = async (userId, diaryId) => {
-    return await Diaries.destroy({ userId, where: { diaryId } });
+    await this.diaryModel.destroy({ userId, where: { diaryId } });
   };
+
+  postDiary = async (postId) => {
+    return await this.diaryModel.findAll({
+      where: { postId },
+      order: [['createdAt', 'DESC']],
+    });
+  };
+
+  exDiary = async (diaryId) => {
+    return await this.diaryModel.findAll({
+      where: { diaryId },
+      order: [['createdAt', 'DESC']],
+    });
+  };
+
+  findAllDiaryBookmark = async (userId) => {};
 }
 
 module.exports = DiaryRepository;
