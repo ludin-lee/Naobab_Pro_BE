@@ -1,15 +1,17 @@
 const BookmarkService = require('../services/bookmark.service');
-const { SECRET_SUM } = process.env;
+const SECRET_SUM = parseInt(process.env.SECRET_SUM);
+const logger = require('../config/loggers');
 class BookmarkController {
   bookmarkService = new BookmarkService();
 
+  //북마크한 다이어리 찾기
   findDiaryBookmark = async (req, res) => {
     const userId = res.locals.userId - SECRET_SUM;
     const exBookmark = await this.bookmarkService.findAllDiaryBookmark(userId);
 
     return res.status(200).json({ Bookmark_Diaries: exBookmark });
   };
-
+  //다이어리 북마크 만들기
   createDiaryBookmark = async (req, res) => {
     const { diaryId } = req.params;
     const userId = res.locals.userId - SECRET_SUM;
@@ -41,18 +43,18 @@ class BookmarkController {
       });
     }
   };
-
+  // 북마크한 게시글 찾기
   findPostBookmark = async (req, res) => {
     const { diaryId } = req.params;
     const userId = res.locals.userId - SECRET_SUM;
 
     try {
-      const exBookmark = await this.bookmarkService.findAllPostBookmark(
+      const Bookmark_Posts = await this.bookmarkService.findAllPostBookmark(
         diaryId,
         userId,
       );
 
-      return res.status(200).json({ exBookmark });
+      return res.status(200).json({ Bookmark_Posts });
     } catch (err) {
       logger.error(err.message || err);
       return res.status(err.status || 500).json({
@@ -61,7 +63,7 @@ class BookmarkController {
       });
     }
   };
-
+  // 일기장 북마크 만들기
   createPostBookmark = async (req, res) => {
     const { postId } = req.params;
     const userId = res.locals.userId - SECRET_SUM;

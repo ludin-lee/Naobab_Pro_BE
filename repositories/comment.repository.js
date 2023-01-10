@@ -4,7 +4,7 @@ class CommentRepository {
   constructor(CommentsModel) {
     this.commentsModel = CommentsModel;
   }
-
+  //댓글 생성하기
   createComment = async (comment, userId, postId) => {
     await this.commentsModel.create({
       comment,
@@ -12,7 +12,7 @@ class CommentRepository {
       postId,
     });
   };
-
+  //댓글 조회
   findPostComment = async (postId) => {
     const query = `SELECT commentId,postId,comment,Comments.createdAt,Comments.updatedAt,Users.nickname
     FROM Comments
@@ -27,17 +27,19 @@ class CommentRepository {
     return queryResult;
   };
 
+  //댓글 단일조회하기
   findOneComment = async (commentId) => {
-    const findOneComment = await this.commentsModel.findOne({
+    return await this.commentsModel.findOne({
       where: { commentId },
     });
-    return findOneComment;
   };
 
+  //댓글 수정하기
   updateComment = async (commentId, comment) => {
     await this.commentsModel.update({ comment }, { where: { commentId } });
   };
 
+  //댓글 삭제하기
   deleteComment = async (commentId) => {
     await this.commentsModel.destroy({
       where: { commentId },

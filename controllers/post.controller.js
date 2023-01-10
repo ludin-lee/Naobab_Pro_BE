@@ -1,10 +1,11 @@
 const PostService = require('../services/post.service');
 const SECRET_SUM = parseInt(process.env.SECRET_SUM);
+const logger = require('../config/loggers');
 
 class PostController {
   postService = new PostService();
 
-  //일기장 생성
+  //일기장 만들기
   createPost = async (req, res) => {
     try {
       const userId = res.locals.userId - SECRET_SUM;
@@ -34,7 +35,7 @@ class PostController {
     }
   };
 
-  //일기장 전체 조회
+  //일기장 전체 조회하기
   findPost = async (req, res) => {
     try {
       const { diaryId } = req.params;
@@ -51,7 +52,7 @@ class PostController {
     }
   };
 
-  //일기장 상세 조회
+  //일기장 상세 조회하기
   findDetailPost = async (req, res) => {
     try {
       const userId = res.locals.userId - SECRET_SUM;
@@ -59,13 +60,16 @@ class PostController {
       const post = await this.postService.findDetailPost(postId, userId);
 
       return res.status(200).json({ data: post, result: true });
-    } catch (error) {
-      console.log(error);
-      res.status(400).json({ errorMessage: '일기장 상세 조회 실패' });
+    } catch (err) {
+      logger.error(err.message || err);
+      return res.status(err.status || 500).json({
+        result: false,
+        message: err.message || '일기장 조회에 실패하였습니다.',
+      });
     }
   };
 
-  //일기장 수정
+  //일기장 수정하기
   patchPost = async (req, res) => {
     try {
       const userId = res.locals.userId - SECRET_SUM;
@@ -87,6 +91,7 @@ class PostController {
         .status(201)
         .json({ message: '일기장 수정 성공', result: true });
     } catch (err) {
+      console.log(err);
       logger.error(err.message || err);
       return res.status(err.status || 500).json({
         result: false,
@@ -95,7 +100,7 @@ class PostController {
     }
   };
 
-  //일기장 삭제
+  //일기장 삭제하기
   deletePost = async (req, res) => {
     try {
       const userId = res.locals.userId - SECRET_SUM;

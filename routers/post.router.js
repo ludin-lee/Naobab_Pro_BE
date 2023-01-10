@@ -7,7 +7,7 @@ const upload = require('../middlewares/awsS3PostMiddleware');
 
 router.post('/:diaryId', upload.single('image'), postController.createPost);
 router.get('/:diaryId', postController.findPost);
-// router.get('/:postId', postController.findDetailPost);
+router.get('/detail/:postId', postController.findDetailPost);
 router.patch('/:postId', upload.single('image'), postController.patchPost);
 router.delete('/:postId', postController.deletePost);
 
