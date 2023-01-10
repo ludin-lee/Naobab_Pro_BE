@@ -1,8 +1,10 @@
 const CommentService = require('../services/comment.service');
 const { SECRET_SUM } = process.env;
+const logger = require('../config/loggers');
 class CommentController {
   commentService = new CommentService();
 
+  //댓글 만들기
   createComment = async (req, res, next) => {
     const { comment } = req.body;
     const { postId } = req.params;
@@ -21,6 +23,7 @@ class CommentController {
     }
   };
 
+  //댓글 찾기
   findComment = async (req, res, next) => {
     const { postId } = req.params;
 
@@ -37,6 +40,7 @@ class CommentController {
     }
   };
 
+  //댓글 수정하기
   updateComment = async (req, res, next) => {
     const { comment } = req.body;
     const { commentId } = req.params;
@@ -55,6 +59,7 @@ class CommentController {
     }
   };
 
+  //댓글 삭제하기
   deleteComment = async (req, res, next) => {
     const { commentId } = req.params;
     const userId = res.locals.userId - SECRET_SUM;

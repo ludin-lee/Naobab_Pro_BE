@@ -46,6 +46,7 @@ module.exports = (sequelize, DataTypes) => {
       design: {
         type: DataTypes.STRING,
         allowNull: true,
+        defaultValue: 'basic',
       },
       userId: {
         allowNull: false,

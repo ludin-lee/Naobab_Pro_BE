@@ -6,12 +6,23 @@ class DiaryRepository {
   }
 
   //다이어리 생성
-  createDiary = async (userId, couple, diaryName, outsideColor) => {
+  createDiary = async (
+    userId,
+    couple,
+    diaryName,
+    outsideColor,
+    insideColor,
+    sticker,
+    design,
+  ) => {
     await this.diaryModel.create({
       userId,
       couple,
       diaryName,
       outsideColor,
+      insideColor,
+      sticker,
+      design,
     });
   };
 
@@ -24,13 +35,23 @@ class DiaryRepository {
   };
 
   //다이어리 수정
-  patchDiary = async (userId, diaryId, couple, diaryName, outsideColor) => {
+  patchDiary = async (
+    diaryId,
+    couple,
+    diaryName,
+    outsideColor,
+    insideColor,
+    sticker,
+    design,
+  ) => {
     await this.diaryModel.update(
       {
-        userId,
         couple,
         diaryName,
         outsideColor,
+        insideColor,
+        sticker,
+        design,
       },
       { where: { diaryId } },
     );
@@ -41,21 +62,25 @@ class DiaryRepository {
     await this.diaryModel.destroy({ userId, where: { diaryId } });
   };
 
-  postDiary = async (postId) => {
-    return await this.diaryModel.findAll({
-      where: { postId },
-      order: [['createdAt', 'DESC']],
-    });
-  };
-
+  //다이어리 ID로 조회
   exDiary = async (diaryId) => {
-    return await this.diaryModel.findAll({
+    return await this.diaryModel.findOne({
       where: { diaryId },
-      order: [['createdAt', 'DESC']],
     });
   };
 
-  findAllDiaryBookmark = async (userId) => {};
+  //북마크한 다이어리 조회
+  findAllDiaryBookmark = async (userId) => {
+    const query = `SELECT Diaries.diaryId,couple,diaryName,outsideColor,insideColor,sticker,design,Diaries.userId,invitedId,Diaries.createdAt
+    FROM Bookmark_diaries LEFT JOIN Diaries 
+    On Diaries.userId = Bookmark_diaries.userId and Diaries.diaryId = Bookmark_diaries.diaryId
+    WHERE Diaries.userId = ${userId}
+    ORDER BY Diaries.createdAt DESC`;
+    const queryResult = await sequelize.query(query, {
+      type: QueryTypes.SELECT,
+    });
+    return queryResult;
+  };
 }
 
 module.exports = DiaryRepository;

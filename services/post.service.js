@@ -1,24 +1,35 @@
 const PostRepository = require('../repositories/post.repository');
 const DiaryRepository = require('../repositories/diary.repository');
-const { Posts, Diaries } = require('../models');
+const BookmarkRepository = require('../repositories/bookmark.repository');
+const CommentsRepository = require('../repositories/comment.repository');
+
+const {
+  Posts,
+  Diaries,
+  Bookmark_post,
+  Bookmark_diary,
+  Comments,
+} = require('../models');
 
 const {
   ValidationError,
   NotFoundError,
+  AuthorizationError,
 } = require('../exceptions/index.exception');
-const DiaryRepository = require('../repositories/diary.repository');
 
 class PostService {
-  constructor() {
-    this.PostRepository = new PostRepository(Posts);
-    this.diaryRepository = new DiaryRepository(Diaries);
-  }
-  postRepository = new PostRepository();
-
+  postRepository = new PostRepository(Posts);
+  diaryRepository = new DiaryRepository(Diaries);
+  bookmarkRepository = new BookmarkRepository(Bookmark_diary, Bookmark_post);
+  commentsRepository = new CommentsRepository(Comments);
   //일기장 생성
   createPost = async (userId, diaryId, title, image, content, weather, tag) => {
     if (!title || !content) throw new ValidationError('일기를 작성해주세요');
 
+    const diary = await this.diaryRepository.exDiary(diaryId);
+
+    if (diary.userId !== userId && diary.invitedId !== userId)
+      throw new AuthorizationError('권한이 없습니다');
     await this.postRepository.createPost(
       userId,
       diaryId,
@@ -38,9 +49,19 @@ class PostService {
 
     const diary = await this.diaryRepository.exDiary(diaryId);
 
-    if (diary.userId !== userId && invitedId !== userId)
+    if (diary.userId !== userId && diary.invitedId !== userId)
       throw new AuthorizationError('권한이 없습니다');
 
+    for (let i in post) {
+      let bookmark = await this.bookmarkRepository.findPostBookmark(
+        post[i].postId,
+        userId,
+      );
+      if (!bookmark) post[i].bookmark = false;
+      else post[i].bookmark = true;
+
+      post[i].insideColor = diary.insideColor;
+    }
     return post;
   };
 
@@ -50,10 +71,18 @@ class PostService {
 
     if (!post) throw new NotFoundError('일기장이 존재하지 않습니다.');
 
-    const diary = await this.diaryRepository.postDiary(postId);
-
-    if (diary.userId !== userId && invitedId !== userId)
+    if (post.userId !== userId && invitedId !== userId)
       throw new AuthorizationError('권한이 없습니다');
+
+    const bookmark = await this.bookmarkRepository.findPostBookmark(
+      post.postId,
+      userId,
+    );
+
+    if (!bookmark) post.bookmark = false;
+    else post.bookmark = true;
+
+    post.comments = await this.commentsRepository.findPostComment(post.postId);
 
     return post;
   };

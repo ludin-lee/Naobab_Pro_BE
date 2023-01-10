@@ -2,7 +2,7 @@ const BookmarkRepository = require('../repositories/bookmark.repository');
 const DiaryRepository = require('../repositories/diary.repository');
 const PostRepository = require('../repositories/post.repository');
 
-const { Bookmark_diary, Bookmark_post, Diary, Post } = require('../models');
+const { Bookmark_diary, Bookmark_post, Diaries, Posts } = require('../models');
 const {
   ValidationError,
   AuthorizationError,
@@ -10,8 +10,8 @@ const {
 
 class BookmarkService {
   bookmarkRepository = new BookmarkRepository(Bookmark_diary, Bookmark_post);
-  diaryRepository = new DiaryRepository(Diary);
-  postRepository = new PostRepository(Post);
+  diaryRepository = new DiaryRepository(Diaries);
+  postRepository = new PostRepository(Posts);
 
   //내 북마크 다이어리 목록 조회
   findAllDiaryBookmark = async (userId) => {
