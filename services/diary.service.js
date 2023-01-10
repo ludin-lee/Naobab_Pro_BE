@@ -8,13 +8,18 @@ const {
 } = require('../exceptions/index.exception');
 
 class DiaryService {
-  constructor() {
-    this.DiaryRepository = new DiaryRepository(Diaries);
-  }
-  diaryRepository = new DiaryRepository();
+  diaryRepository = new DiaryRepository(Diaries);
 
   //다이어리 생성
-  createDiary = async (userId, couple, diaryName, outsideColor) => {
+  createDiary = async (
+    userId,
+    couple,
+    diaryName,
+    outsideColor,
+    insideColor,
+    sticker,
+    design,
+  ) => {
     if (!diaryName || !outsideColor || couple === undefined)
       throw new ValidationError('모든 항목을 입력해주세요');
 
@@ -23,6 +28,9 @@ class DiaryService {
       couple,
       diaryName,
       outsideColor,
+      insideColor,
+      sticker,
+      design,
     );
   };
 
@@ -36,23 +44,41 @@ class DiaryService {
   };
 
   //다이어리 수정
-  patchDiary = async (userId, diaryId, couple, diaryName, outsideColor) => {
+  patchDiary = async (
+    diaryId,
+    userId,
+    couple,
+    diaryName,
+    outsideColor,
+    insideColor,
+    sticker,
+    design,
+  ) => {
     const diary = await this.diaryRepository.exDiary(diaryId);
 
     if (!diary) throw new NotFoundError('다이어리가 존재하지 않습니다.');
 
+    console.log(diary.userId);
     if (diary.userId !== userId && diary.invitedId !== userId)
       throw new AuthorizationError('권한이 없습니다');
 
-    if (!diaryName || !outsideColor || couple === undefined)
+    if (
+      !diaryName ||
+      !outsideColor ||
+      !insideColor ||
+      !design ||
+      couple === undefined
+    )
       throw new ValidationError('모든 항목을 입력해주세요.');
 
     await this.diaryRepository.patchDiary(
-      userId,
       diaryId,
       couple,
       diaryName,
       outsideColor,
+      insideColor,
+      sticker,
+      design,
     );
   };
 
@@ -62,7 +88,7 @@ class DiaryService {
 
     if (!diary) throw new NotFoundError('다이어리가 존재하지 않습니다.');
 
-    if (diary.userId !== userId && diary.invitedId !== userId)
+    if (diary.userId !== userId)
       throw new AuthorizationError('권한이 없습니다');
 
     await this.diaryRepository.deleteDiary(userId, diaryId);

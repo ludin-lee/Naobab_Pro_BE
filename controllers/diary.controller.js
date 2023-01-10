@@ -1,6 +1,6 @@
-const { json } = require('sequelize');
 const DiaryService = require('../services/diary.service');
 const SECRET_SUM = parseInt(process.env.SECRET_SUM);
+const logger = require('../config/loggers');
 
 class DiaryController {
   diaryService = new DiaryService();
@@ -9,13 +9,17 @@ class DiaryController {
   createDiary = async (req, res) => {
     try {
       const userId = res.locals.userId - SECRET_SUM;
-      const { couple, diaryName, outsideColor } = req.body;
+      const { couple, diaryName, outsideColor, insideColor, sticker, design } =
+        req.body;
 
       await this.diaryService.createDiary(
         userId,
         couple,
         diaryName,
         outsideColor,
+        insideColor,
+        sticker,
+        design,
       );
 
       return res
@@ -36,8 +40,9 @@ class DiaryController {
       const userId = res.locals.userId - SECRET_SUM;
       const diary = await this.diaryService.findDiary(userId);
 
-      return res.status(200).json({ data: diary, result: true });
+      return res.status(200).json({ diaries: diary, result: true });
     } catch (err) {
+      console.log(err);
       logger.error(err.message || err);
       return res.status(err.status || 500).json({
         result: false,
@@ -51,14 +56,18 @@ class DiaryController {
     try {
       const userId = res.locals.userId - SECRET_SUM;
       const { diaryId } = req.params;
-      const { couple, diaryName, outsideColor } = req.body;
+      const { couple, diaryName, outsideColor, insideColor, sticker, design } =
+        req.body;
 
       await this.diaryService.patchDiary(
-        userId,
         diaryId,
+        userId,
         couple,
         diaryName,
         outsideColor,
+        insideColor,
+        sticker,
+        design,
       );
 
       return res

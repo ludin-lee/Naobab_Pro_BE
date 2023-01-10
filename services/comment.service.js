@@ -10,6 +10,7 @@ class CommentService {
   commentRepository = new CommentRepository(Comments);
   postRepository = new PostRepository(Posts);
 
+  //댓글 생성하기
   createComment = async (comment, userId, postId) => {
     if (!comment) throw new ValidationError('내용을 입력해주세요');
 
@@ -19,6 +20,7 @@ class CommentService {
     await this.commentRepository.createComment(comment, userId, postId);
   };
 
+  //댓글 조회하기
   findComment = async (postId) => {
     const comments = this.commentRepository.findPostComment(postId);
 
