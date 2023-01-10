@@ -30,6 +30,7 @@ group by Posts.postId
 
   //일기장 전체 조회
   findPost = async (diaryId) => {
+
     const query = `SELECT Posts.postId,Posts.userId,Users.nickname,title,image,tag,profileImg,IFNULL(commentsCount,0) as commentsCount
     FROM Posts LEFT JOIN CountTable 
     ON Posts.postId = CountTable.postId
@@ -40,6 +41,7 @@ group by Posts.postId
    `;
     const queryResult = await sequelize.query(query, {
       type: QueryTypes.SELECT,
+
     });
     return queryResult;
   };
