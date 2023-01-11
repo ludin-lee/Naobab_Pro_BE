@@ -11,7 +11,9 @@ class PostController {
       const userId = res.locals.userId - SECRET_SUM;
       const { diaryId } = req.params;
       const { title, content, weather, tag } = req.body;
-      const image = req.file.location;
+      let image = null;
+
+      if (req.file !== undefined) image = req.file.location;
 
       await this.postService.createPost(
         userId,
@@ -27,6 +29,7 @@ class PostController {
         .status(201)
         .json({ message: '일기장 생성 성공', result: true });
     } catch (err) {
+      console.log(err);
       logger.error(err.message || err);
       return res.status(err.status || 500).json({
         result: false,
@@ -75,7 +78,9 @@ class PostController {
       const userId = res.locals.userId - SECRET_SUM;
       const { postId } = req.params;
       const { title, content, weather, tag } = req.body;
-      const image = req.file.location;
+      let image = null;
+
+      if (req.file !== undefined) image = req.file.location;
 
       await this.postService.patchPost(
         userId,

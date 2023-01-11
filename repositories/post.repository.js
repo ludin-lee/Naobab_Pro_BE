@@ -9,7 +9,7 @@ class PostRepository {
   // View Table 생성 (댓글 카운트용)
   /*
 create view CountTable as
-select Posts.postId ,count(Comments.postId)
+select Posts.postId ,count(Comments.postId) as commentsCount
 from Posts LEFT JOIN Comments
 on Posts.postId = Comments.postId
 group by Posts.postId
@@ -30,7 +30,6 @@ group by Posts.postId
 
   //일기장 전체 조회
   findPost = async (diaryId) => {
-
     const query = `SELECT Posts.postId,Posts.userId,Users.nickname,title,image,tag,profileImg,IFNULL(commentsCount,0) as commentsCount
     FROM Posts LEFT JOIN CountTable 
     ON Posts.postId = CountTable.postId
@@ -41,7 +40,6 @@ group by Posts.postId
    `;
     const queryResult = await sequelize.query(query, {
       type: QueryTypes.SELECT,
-
     });
     return queryResult;
   };

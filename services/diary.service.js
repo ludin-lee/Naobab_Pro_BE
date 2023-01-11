@@ -20,8 +20,7 @@ class DiaryService {
     sticker,
     design,
   ) => {
-    if (!diaryName || !outsideColor || couple === undefined)
-      throw new ValidationError('모든 항목을 입력해주세요');
+    if (!diaryName) throw new ValidationError('필수 항목을 입력해주세요');
 
     await this.diaryRepository.createDiary(
       userId,
@@ -62,14 +61,7 @@ class DiaryService {
     if (diary.userId !== userId && diary.invitedId !== userId)
       throw new AuthorizationError('권한이 없습니다');
 
-    if (
-      !diaryName ||
-      !outsideColor ||
-      !insideColor ||
-      !design ||
-      couple === undefined
-    )
-      throw new ValidationError('모든 항목을 입력해주세요.');
+    if (!diaryName) throw new ValidationError('필수 항목을 입력해주세요.');
 
     await this.diaryRepository.patchDiary(
       diaryId,
