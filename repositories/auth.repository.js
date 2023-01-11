@@ -1,5 +1,3 @@
-const { Users } = require('../models');
-
 class AuthRepository {
   constructor(UsersModel) {
     this.usersModel = UsersModel;
