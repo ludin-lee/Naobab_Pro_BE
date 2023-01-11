@@ -1,45 +1,79 @@
 const UserInfoService = require('../services/userInfo.service');
+const SECRET_SUM = parseInt(process.env.SECRET_SUM);
+const logger = require('../config/loggers');
 
 class UserInfoController {
-  updateUserService = new UserInfoService();
+  userInfoService = new UserInfoService();
+
+  //유저 기존 정보 조회
+  findUserInfo = async (req, res) => {
+    try {
+      const userId = res.locals.userId - SECRET_SUM;
+      const userInfo = await this.userInfoService.findUserBasicInfo(userId);
+
+      return res.status(201).json({ userInfo });
+    } catch (err) {
+      logger.error(err.message || err);
+      return res.status(err.status || 500).json({
+        result: false,
+        message: err.message || '유저 정보 조회에 실패하였습니다.',
+      });
+    }
+  };
 
   //회원정보 수정
   updateUser = async (req, res) => {
     try {
-      const userId = res.locals.userId;
+      const userId = res.locals.userId - SECRET_SUM;
+      const { currentPassword, nickname } = req.body;
+
+      if (req.file === undefined) {
+        req.file = {};
+        req.file.location =
+          'https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png';
+      }
       const profileImg = req.file.location;
-      // console.log(image);
-      const { nickname } = req.body;
-      await this.updateUserService.updateUser(userId, profileImg, nickname);
+
+      await this.userInfoService.updateUser(
+        userId,
+        profileImg,
+        currentPassword,
+        nickname,
+      );
+
       return res
         .status(201)
         .json({ message: '프로필 수정에 성공하였습니다.', result: true });
     } catch (err) {
-      console.log(err);
-      res
-        .status(400)
-        .json({ errormessage: '프로필 수정에 실패하였습니다.', result: false });
+      logger.error(err.message || err);
+      return res.status(err.status || 500).json({
+        result: false,
+        message: err.message || '프로필 수정에 실패하였습니다.',
+      });
     }
   };
 
   //비밀번호 변경
   updatePassWord = async (req, res) => {
     try {
-      const userId = res.locals.userId;
-      const { currentPassword, changePassword } = req.body;
-      await this.updateUserService.updatePassWord(
+      const userId = res.locals.userId - SECRET_SUM;
+      const { currentPassword, changePassword, confirmPassword } = req.body;
+
+      await this.userInfoService.updatePassWord(
         userId,
         currentPassword,
         changePassword,
+        confirmPassword,
       );
+
       return res
         .status(201)
         .json({ message: '비밀번호가 변경되었습니다', result: true });
     } catch (err) {
-      console.log(err);
-      res.status(400).json({
-        errormessage: '비밀번호 변경에 실패하였습니다.',
+      logger.error(err.message || err);
+      return res.status(err.status || 500).json({
         result: false,
+        message: err.message || '비밀번호 변경에 실패하였습니다.',
       });
     }
   };
@@ -47,20 +81,21 @@ class UserInfoController {
   //회원탈퇴
   unregisterUSer = async (req, res) => {
     try {
-      const userId = res.locals.userId;
+      const userId = res.locals.userId - SECRET_SUM;
       const { currentPassword } = req.body;
-      await this.updateUserService.unregisterUSer(userId, currentPassword);
-      // console.log(userId);
-      // console.log(currentPassword);
+
+      await this.userInfoService.unregisterUSer(userId, currentPassword);
+
       return res.status(201).json({
         message: '회원 탈퇴가 정상적으로 이루어졌습니다.',
         result: true,
       });
     } catch (err) {
-      console.log(err);
-      res
-        .status(400)
-        .json({ errormessage: '회원 탈퇴에 실패하였습니다.', result: false });
+      logger.error(err.message || err);
+      return res.status(err.status || 500).json({
+        result: false,
+        message: err.message || '회원탈퇴에 실패하였습니다.',
+      });
     }
   };
 }

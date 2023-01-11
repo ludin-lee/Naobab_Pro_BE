@@ -1,13 +1,34 @@
-const { ValidationError } = require('sequelize');
 const { Users } = require('../models');
 const UserInfoRepository = require('../repositories/userInfo.repository');
+const bcrypt = require('bcryptjs');
+const {
+  ValidationError,
+  AuthorizationError,
+} = require('../exceptions/index.exception');
+const PASSWORD_SALT = parseInt(process.env.PASSWORD_SALT);
 
 class UserInfoService {
   userInfoRepository = new UserInfoRepository(Users);
 
+  //회원 정보 조회
+  findUserBasicInfo = async (userId) => {
+    const userInfo = await this.userInfoRepository.findUserBasicInfo(userId);
+    if (!userInfo) throw new ValidationError('유저가 존재하지 않습니다.');
+
+    return userInfo;
+  };
+
   //회원정보 수정
-  updateUser = async (userId, profileImg, nickname) => {
-    // console.log(image);
+  updateUser = async (userId, profileImg, currentPassword, nickname) => {
+    const userInfo = await this.userInfoRepository.findUserInfo(userId);
+    const hashedPassword = await bcrypt.hash(currentPassword, PASSWORD_SALT);
+
+    const checkPassword = await bcrypt.compare(
+      currentPassword,
+      userInfo.password,
+    );
+    if (!checkPassword) throw new AuthorizationError('비밀번호를 확인해주세요');
+
     if (!profileImg || !nickname)
       throw new ValidationError('모든 항목을 입력해주세요');
 
@@ -15,22 +36,44 @@ class UserInfoService {
   };
 
   //비밀번호 변경
-  updatePassWord = async (userId, currentPassword, changePassword) => {
-    await this.userInfoRepository.updatePassWord(userId, changePassword);
+  updatePassWord = async (
+    userId,
+    currentPassword,
+    changePassword,
+    confirmPassword,
+  ) => {
+    if (changePassword !== confirmPassword)
+      throw new AuthorizationError(
+        '변경할 비밀번호가 일치하지 않습니다. 다시 확인해주세요',
+      );
+
+    const userInfo = await this.userInfoRepository.findUserInfo(userId);
+    const checkPassword = await bcrypt.compare(
+      currentPassword,
+      userInfo.password,
+    );
+    if (!checkPassword) throw new AuthorizationError('비밀번호를 확인해주세요');
+
+    const hashedChangePassword = await bcrypt.hash(
+      changePassword,
+      parseInt(PASSWORD_SALT),
+    );
+
+    await this.userInfoRepository.updatePassWord(userId, hashedChangePassword);
   };
 
   //회원탈퇴
   unregisterUSer = async (userId, currentPassword) => {
-    if (!userId) {
-      throw new ValidationError('유저가 존재하지 않습니다.');
-    }
-    if (currentPassword !== currentPassword) {
-      throw new ValidationError('비밀번호가 일치하지 않습니다.');
-    }
-    await this.userInfoRepository.unregisterUSer(
-      { currentPassword },
-      { where: { userId } },
+    const userInfo = await this.userInfoRepository.findUserInfo(userId);
+    if (!userInfo) throw new ValidationError('유저가 존재하지 않습니다.');
+
+    const checkPassword = await bcrypt.compare(
+      currentPassword,
+      userInfo.password,
     );
+    if (!checkPassword) throw new AuthorizationError('비밀번호를 확인해주세요');
+
+    await this.userInfoRepository.unregisterUSer(userId);
   };
 }
 

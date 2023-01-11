@@ -1,18 +1,28 @@
-const { Users } = require('../models');
-const { Sequelize } = require('sequelize');
-
 class UserInfoRepository {
   constructor(UserModel) {
     this.userModel = UserModel;
   }
+  //기본 정보 조회
+  findUserBasicInfo = async (userId) => {
+    return await this.userModel.findOne({
+      where: { userId },
+      attributes: { exclude: ['password', 'social', 'provider'] },
+    });
+  };
+  //상세 정보 조회
+  findUserInfo = async (userId) => {
+    return await this.userModel.findOne({ where: { userId } });
+  };
   //회원정보 수정
   updateUser = async (userId, profileImg, nickname) => {
-    await this.userModel.update({ nickname }, { where: { userId } });
+    await this.userModel.update(
+      { profileImg, nickname },
+      { where: { userId } },
+    );
   };
 
   //비밀번호 변경
   updatePassWord = async (userId, changePassword) => {
-    // console.log(changePassword);
     await this.userModel.update(
       { password: changePassword },
       { where: { userId } },
@@ -20,8 +30,8 @@ class UserInfoRepository {
   };
 
   //회원탈퇴
-  unregisterUSer = async (userId, currentPassword) => {
-    await this.userModel.destroy({ currentPassword }, { where: { userId } });
+  unregisterUSer = async (userId) => {
+    await this.userModel.destroy({ where: { userId } });
   };
 }
 

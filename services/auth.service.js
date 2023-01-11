@@ -6,6 +6,7 @@ const {
   ValidationError,
   DuplicateError,
   BadRequestError,
+  NotFoundError,
 } = require('../exceptions/index.exception');
 const AuthRepository = require('../repositories/auth.repository');
 
@@ -53,11 +54,11 @@ class AuthService {
   //로그인
   login = async (email, password) => {
     const loginVal = await this.authRepository.login(email);
-
+    if (loginVal === null)
+      throw new ValidationError('이메일 또는 패스워드를 확인해주세요.');
     if (loginVal.social !== true) {
       const checkPassword = await bcrypt.compare(password, loginVal.password);
-
-      if (email !== loginVal.email || !checkPassword)
+      if (!checkPassword)
         throw new ValidationError('이메일 또는 패스워드를 확인해주세요.');
     } else
       throw new BadRequestError('해당 아이디는 소셜로그인으로 시도해주세요.');
