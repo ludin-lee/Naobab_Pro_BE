@@ -9,7 +9,7 @@ class PostRepository {
   // View Table 생성 (댓글 카운트용)
   /*
 create view CountTable as
-select Posts.postId ,count(Comments.postId)
+select Posts.postId ,count(Comments.postId) as commentsCount
 from Posts LEFT JOIN Comments
 on Posts.postId = Comments.postId
 group by Posts.postId

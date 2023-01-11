@@ -24,12 +24,14 @@ class PostService {
   commentsRepository = new CommentsRepository(Comments);
   //일기장 생성
   createPost = async (userId, diaryId, title, image, content, weather, tag) => {
-    if (!title || !content) throw new ValidationError('일기를 작성해주세요');
+    if (!title || !content)
+      throw new ValidationError('필수 항목을 작성해주세요');
 
     const diary = await this.diaryRepository.exDiary(diaryId);
 
     if (diary.userId !== userId && diary.invitedId !== userId)
       throw new AuthorizationError('권한이 없습니다');
+
     await this.postRepository.createPost(
       userId,
       diaryId,
@@ -68,10 +70,10 @@ class PostService {
   //일기장 상세 조회
   findDetailPost = async (postId, userId) => {
     const post = await this.postRepository.findDetailPost(postId);
-
     if (!post) throw new NotFoundError('일기장이 존재하지 않습니다.');
+    const diary = await this.diaryRepository.exDiary(post.diaryId);
 
-    if (post.userId !== userId && invitedId !== userId)
+    if (diary.userId !== userId && diary.invitedId !== userId)
       throw new AuthorizationError('권한이 없습니다');
 
     const bookmark = await this.bookmarkRepository.findPostBookmark(
@@ -95,8 +97,8 @@ class PostService {
 
     if (post.userId !== userId) throw new AuthorizationError('권한이 없습니다');
 
-    if (!title || !content || !tag)
-      throw new ValidationError('모든 항목을 입력해주세요.');
+    if (!title || !content)
+      throw new ValidationError('필수 항목을 입력해주세요.');
 
     await this.postRepository.patchPost(
       userId,

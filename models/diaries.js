@@ -24,6 +24,7 @@ module.exports = (sequelize, DataTypes) => {
       couple: {
         type: DataTypes.BOOLEAN,
         allowNull: true,
+        defaultValue: false,
       },
       diaryName: {
         type: DataTypes.STRING,
