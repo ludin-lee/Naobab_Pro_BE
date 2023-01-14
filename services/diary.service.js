@@ -56,8 +56,6 @@ class DiaryService {
     const diary = await this.diaryRepository.exDiary(diaryId);
 
     if (!diary) throw new NotFoundError('다이어리가 존재하지 않습니다.');
-
-    console.log(diary.userId);
     if (diary.userId !== userId && diary.invitedId !== userId)
       throw new AuthorizationError('권한이 없습니다');
 

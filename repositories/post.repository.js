@@ -1,4 +1,4 @@
-const { Sequelize, QueryTypes } = require('sequelize');
+const { Sequelize, QueryTypes, Op } = require('sequelize');
 const { sequelize } = require('../models');
 
 class PostRepository {
@@ -64,7 +64,6 @@ group by Posts.postId
 
   //일기장 수정
   patchPost = async (userId, postId, title, image, content, weather, tag) => {
-    console.log(userId, postId, title, image, content, weather, tag);
     await this.postModel.update(
       {
         userId,
@@ -105,6 +104,45 @@ group by Posts.postId
       type: QueryTypes.SELECT,
     });
     return queryResult;
+  };
+
+  //태그 목록 조회
+  findTag = async (diaryId) => {
+    return await this.postModel.findAll({
+      where: { diaryId },
+      attributes: [Sequelize.fn('DISTINCT', Sequelize.col('tag')), 'tag'],
+    });
+  };
+
+  //타이틀로 검색
+  searchPostTitle = async (diaryId, title) => {
+    return await this.postModel.findAll({
+      where: {
+        diaryId,
+        title: {
+          [Op.like]: `%${title}%`,
+        },
+      },
+    });
+  };
+
+  //내용으로 검색
+  searchPostContent = async (diaryId, content) => {
+    return await this.postModel.findAll({
+      where: {
+        diaryId,
+        content: {
+          [Op.like]: `%${content}%`,
+        },
+      },
+    });
+  };
+
+  //태그로 검색
+  searchPostTag = async (diaryId, tag) => {
+    return await this.postModel.findAll({
+      where: { diaryId, tag },
+    });
   };
 }
 

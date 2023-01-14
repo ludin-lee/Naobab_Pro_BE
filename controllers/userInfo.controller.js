@@ -11,7 +11,7 @@ class UserInfoController {
       const userId = res.locals.userId - SECRET_SUM;
       const userInfo = await this.userInfoService.findUserBasicInfo(userId);
 
-      return res.status(201).json({ userInfo });
+      return res.status(201).json({ userInfo, result: true });
     } catch (err) {
       logger.error(err.message || err);
       return res.status(err.status || 500).json({
