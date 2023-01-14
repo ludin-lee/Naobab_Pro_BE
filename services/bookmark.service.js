@@ -55,7 +55,7 @@ class BookmarkService {
   //일기장 북마크 생성
   createPostBookmark = async (postId, userId) => {
     const exPost = await this.postRepository.findDetailPost(postId);
-    if (!exPost) throw new ValidationError('존재하지 않는 다이어리입니다.');
+    if (!exPost) throw new ValidationError('존재하지 않는 일기장입니다.');
     if (exPost.userId !== userId)
       throw new AuthorizationError('권한이 없습니다');
 
@@ -64,7 +64,7 @@ class BookmarkService {
   //일기장 북마크 삭제
   deletePostBookmark = async (postId, userId) => {
     const exPost = await this.postRepository.findDetailPost(postId);
-    if (!exPost) throw new ValidationError('존재하지 않는 다이어리입니다.');
+    if (!exPost) throw new ValidationError('존재하지 않는 일기장입니다.');
     if (exPost.userId !== userId)
       throw new AuthorizationError('권한이 없습니다');
 

@@ -63,7 +63,7 @@ class UserInfoService {
   };
 
   //회원탈퇴
-  unregisterUSer = async (userId, currentPassword) => {
+  unregisterUser = async (userId, currentPassword) => {
     const userInfo = await this.userInfoRepository.findUserInfo(userId);
     if (!userInfo) throw new ValidationError('유저가 존재하지 않습니다.');
 
@@ -73,7 +73,7 @@ class UserInfoService {
     );
     if (!checkPassword) throw new AuthorizationError('비밀번호를 확인해주세요');
 
-    await this.userInfoRepository.unregisterUSer(userId);
+    await this.userInfoRepository.unregisterUser(userId);
   };
 }
 

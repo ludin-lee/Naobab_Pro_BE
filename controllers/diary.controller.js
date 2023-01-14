@@ -42,7 +42,6 @@ class DiaryController {
 
       return res.status(200).json({ diaries: diary, result: true });
     } catch (err) {
-      console.log(err);
       logger.error(err.message || err);
       return res.status(err.status || 500).json({
         result: false,

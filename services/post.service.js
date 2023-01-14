@@ -47,10 +47,9 @@ class PostService {
   findPost = async (diaryId, userId) => {
     const post = await this.postRepository.findPost(diaryId);
 
-    if (!post.length) throw new NotFoundError('일기장이 존재하지 않습니다.');
-
     const diary = await this.diaryRepository.exDiary(diaryId);
 
+    if (!diary) throw new NotFoundError('다이어리가 존재하지 않습니다.');
     if (diary.userId !== userId && diary.invitedId !== userId)
       throw new AuthorizationError('권한이 없습니다');
 
@@ -120,6 +119,38 @@ class PostService {
     if (post.userId !== userId) throw new AuthorizationError('권한이 없습니다');
 
     await this.postRepository.deletePost(postId);
+  };
+
+  //태그 목록 조회
+  findTag = async (userId, diaryId) => {
+    const diary = await this.diaryRepository.exDiary(diaryId);
+
+    if (!diary) throw new NotFoundError('다이어리가 존재하지 않습니다');
+
+    if (diary.userId !== userId && diary.invitedId !== userId)
+      throw new AuthorizationError('권한이 없습니다');
+
+    const tags = await this.postRepository.findTag(diaryId);
+
+    return tags;
+  };
+
+  searchPost = async (diaryId, userId, title, content, tag) => {
+    const diary = await this.diaryRepository.exDiary(diaryId);
+    let posts = {};
+
+    if (!diary) throw new NotFoundError('존재하지 않는 다이어리입니다.');
+
+    if (diary.userId !== userId && diary.invitedId !== userId)
+      throw new AuthorizationError('권한이 없습니다');
+
+    if (title)
+      posts = await this.postRepository.searchPostTitle(diaryId, title);
+    else if (content)
+      posts = await this.postRepository.searchPostContent(diaryId, content);
+    else if (tag) posts = await this.postRepository.searchPostTag(diaryId, tag);
+
+    return posts;
   };
 }
 

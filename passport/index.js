@@ -1,5 +1,5 @@
 const passport = require('passport');
-const kakao = require('./kakaoStrategy');
+const kakao = require('./KaKaoStrategy');
 // const naver = require('./NaverStrategy');
 
 module.exports = (app) => {
