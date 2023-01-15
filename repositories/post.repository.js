@@ -116,33 +116,50 @@ group by Posts.postId
 
   //타이틀로 검색
   searchPostTitle = async (diaryId, title) => {
-    return await this.postModel.findAll({
-      where: {
-        diaryId,
-        title: {
-          [Op.like]: `%${title}%`,
-        },
-      },
+    const query = `SELECT Posts.postId,Posts.userId,Users.nickname,title,image,tag,profileImg,IFNULL(commentsCount,0) as commentsCount
+    FROM Posts LEFT JOIN CountTable 
+    ON Posts.postId = CountTable.postId
+    LEFT JOIN Users
+    On Posts.userId = Users.userId
+    where Posts.diaryId = ${diaryId} and title LIKE '%${title}%'
+   ORDER BY Posts.createdAt DESC
+   `;
+    const queryResult = await sequelize.query(query, {
+      type: QueryTypes.SELECT,
     });
+    return queryResult;
   };
 
   //내용으로 검색
   searchPostContent = async (diaryId, content) => {
-    return await this.postModel.findAll({
-      where: {
-        diaryId,
-        content: {
-          [Op.like]: `%${content}%`,
-        },
-      },
+    const query = `SELECT Posts.postId,Posts.userId,Users.nickname,title,image,tag,profileImg,IFNULL(commentsCount,0) as commentsCount
+    FROM Posts LEFT JOIN CountTable 
+    ON Posts.postId = CountTable.postId
+    LEFT JOIN Users
+    On Posts.userId = Users.userId
+    where Posts.diaryId = ${diaryId} and content LIKE '%${content}%'
+   ORDER BY Posts.createdAt DESC
+   `;
+    const queryResult = await sequelize.query(query, {
+      type: QueryTypes.SELECT,
     });
+    return queryResult;
   };
 
   //태그로 검색
   searchPostTag = async (diaryId, tag) => {
-    return await this.postModel.findAll({
-      where: { diaryId, tag },
+    const query = `SELECT Posts.postId,Posts.userId,Users.nickname,title,image,tag,profileImg,IFNULL(commentsCount,0) as commentsCount
+    FROM Posts LEFT JOIN CountTable 
+    ON Posts.postId = CountTable.postId
+    LEFT JOIN Users
+    On Posts.userId = Users.userId
+    where Posts.diaryId = ${diaryId} and tag = '${tag}'
+   ORDER BY Posts.createdAt DESC
+   `;
+    const queryResult = await sequelize.query(query, {
+      type: QueryTypes.SELECT,
     });
+    return queryResult;
   };
 }
 
