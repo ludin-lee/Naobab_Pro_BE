@@ -10,7 +10,7 @@ class PostController {
     try {
       const userId = res.locals.userId - SECRET_SUM;
       const { diaryId } = req.params;
-      const { title, content, weather, tag } = req.body;
+      const { title, content, weather, tag, createdAt } = req.body;
       let image = null;
 
       if (req.file !== undefined) image = req.file.location;
@@ -23,6 +23,7 @@ class PostController {
         content,
         weather,
         tag,
+        createdAt,
       );
 
       return res
@@ -76,7 +77,7 @@ class PostController {
     try {
       const userId = res.locals.userId - SECRET_SUM;
       const { postId } = req.params;
-      const { title, content, weather, tag } = req.body;
+      const { title, content, weather, tag, createdAt } = req.body;
       let image = null;
 
       if (req.file !== undefined) image = req.file.location;
@@ -89,6 +90,7 @@ class PostController {
         content,
         weather,
         tag,
+        createdAt,
       );
 
       return res
