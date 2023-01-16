@@ -28,10 +28,19 @@ class DiaryRepository {
 
   //다이어리 조회
   findDiary = async (userId) => {
-    return await this.diaryModel.findAll({
-      where: { userId },
-      order: [['createdAt', 'DESC']],
+    const query = `select Diaries.diaryId, couple, diaryName,outsideColor,insideColor,sticker,design,if(bookmarkId IS NULL, FALSE,TRUE) as bookmark,nickname,
+    (select nickname from Users  where userId = Diaries.invitedId) as invitedNickname
+    from Diaries 
+    LEFT JOIN  Bookmark_diaries
+    On Diaries.diaryId = Bookmark_diaries.diaryId 
+    LEFT JOIN Users
+    On Diaries.userId = Users.userId
+    where Diaries.userId = ${userId}
+   `;
+    const queryResult = await sequelize.query(query, {
+      type: QueryTypes.SELECT,
     });
+    return queryResult;
   };
 
   //다이어리 수정

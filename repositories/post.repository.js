@@ -30,13 +30,15 @@ group by Posts.postId
 
   //일기장 전체 조회
   findPost = async (diaryId) => {
-    const query = `SELECT Posts.postId,Posts.userId,Users.nickname,title,image,tag,profileImg,IFNULL(commentsCount,0) as commentsCount
+    const query = `SELECT Posts.postId,Posts.userId,Users.nickname,title,image,tag,profileImg,IFNULL(commentsCount,0) as commentsCount,if(bookmarkId IS NULL, FALSE,TRUE) as bookmark
     FROM Posts LEFT JOIN CountTable 
     ON Posts.postId = CountTable.postId
     LEFT JOIN Users
     On Posts.userId = Users.userId
+	  LEFT JOIN  Bookmark_posts
+    On Posts.postId = Bookmark_posts.postId
     where Posts.diaryId = ${diaryId}
-   ORDER BY Posts.createdAt DESC
+    ORDER BY Posts.createdAt DESC
    `;
     const queryResult = await sequelize.query(query, {
       type: QueryTypes.SELECT,
@@ -46,15 +48,17 @@ group by Posts.postId
 
   //일기장 상세 조회
   findDetailPost = async (postId) => {
-    const query = `SELECT Posts.postId,Posts.diaryId,Posts.userId,Users.nickname,title,insideColor,image,tag,IFNULL(commentsCount,0) as commentsCount
+    const query = `SELECT Posts.postId,Posts.diaryId,Posts.userId,Users.nickname,title,insideColor,image,tag,IFNULL(commentsCount,0) as commentsCount,if(bookmarkId IS NULL, FALSE,TRUE) as bookmark
     FROM Posts LEFT JOIN CountTable 
     ON Posts.postId = CountTable.postId
     LEFT JOIN Users
     On Posts.userId = Users.userId
     LEFT JOIN Diaries
     On Posts.diaryId = Diaries.diaryId
+	  LEFT JOIN  Bookmark_posts
+    On Posts.postId = Bookmark_posts.postId
     where Posts.postId = ${postId}
-   ORDER BY Posts.createdAt DESC
+    ORDER BY Posts.createdAt DESC
     `;
     const queryResult = await sequelize.query(query, {
       type: QueryTypes.SELECT,
