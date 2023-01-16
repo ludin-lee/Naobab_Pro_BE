@@ -16,7 +16,16 @@ group by Posts.postId
 */
 
   //일기장 생성
-  createPost = async (userId, diaryId, title, image, content, weather, tag) => {
+  createPost = async (
+    userId,
+    diaryId,
+    title,
+    image,
+    content,
+    weather,
+    tag,
+    createdAt,
+  ) => {
     await this.postModel.create({
       userId,
       diaryId,
@@ -25,6 +34,7 @@ group by Posts.postId
       content,
       weather,
       tag,
+      createdAt,
     });
   };
 
@@ -67,7 +77,16 @@ group by Posts.postId
   };
 
   //일기장 수정
-  patchPost = async (userId, postId, title, image, content, weather, tag) => {
+  patchPost = async (
+    userId,
+    postId,
+    title,
+    image,
+    content,
+    weather,
+    tag,
+    createdAt,
+  ) => {
     await this.postModel.update(
       {
         userId,
@@ -76,6 +95,7 @@ group by Posts.postId
         content,
         weather,
         tag,
+        createdAt,
       },
       {
         where: {

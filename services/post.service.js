@@ -23,7 +23,16 @@ class PostService {
   bookmarkRepository = new BookmarkRepository(Bookmark_diary, Bookmark_post);
   commentsRepository = new CommentsRepository(Comments);
   //일기장 생성
-  createPost = async (userId, diaryId, title, image, content, weather, tag) => {
+  createPost = async (
+    userId,
+    diaryId,
+    title,
+    image,
+    content,
+    weather,
+    tag,
+    createdAt,
+  ) => {
     if (!title || !content)
       throw new ValidationError('필수 항목을 작성해주세요');
 
@@ -40,6 +49,7 @@ class PostService {
       content,
       weather,
       tag,
+      createdAt,
     );
   };
 
@@ -89,7 +99,16 @@ class PostService {
   };
 
   //일기장 수정
-  patchPost = async (userId, postId, title, image, content, weather, tag) => {
+  patchPost = async (
+    userId,
+    postId,
+    title,
+    image,
+    content,
+    weather,
+    tag,
+    createdAt,
+  ) => {
     const post = await this.postRepository.findDetailPost(postId);
 
     if (!post) throw new NotFoundError('일기장이 존재하지 않습니다.');
@@ -107,6 +126,7 @@ class PostService {
       content,
       weather,
       tag,
+      createdAt,
     );
   };
 
