@@ -40,7 +40,8 @@ group by Posts.postId
 
   //일기장 전체 조회
   findPost = async (diaryId) => {
-    const query = `SELECT Posts.postId,Posts.userId,Users.nickname,title,image,content,tag,profileImg,IFNULL(commentsCount,0) as commentsCount,if(bookmarkId IS NULL, FALSE,TRUE) as bookmark
+
+    const query = `SELECT Posts.postId,Posts.userId,Users.nickname,title,image,tag,profileImg,IFNULL(commentsCount,0) as commentsCount,if(bookmarkId IS NULL, FALSE,TRUE) as bookmark,Posts.createdAt
     FROM Posts LEFT JOIN CountTable 
     ON Posts.postId = CountTable.postId
     LEFT JOIN Users
@@ -58,8 +59,9 @@ group by Posts.postId
 
   //일기장 상세 조회
   findDetailPost = async (postId) => {
-    const query = `SELECT Posts.postId,Posts.diaryId,Posts.userId,Users.nickname,title,insideColor,image,content,tag,IFNULL(commentsCount,0) as commentsCount,if(bookmarkId IS NULL, FALSE,TRUE) as bookmark
-    FROM Posts LEFT JOIN CountTable 
+
+    const query = `SELECT Posts.postId,Posts.diaryId,Posts.userId,Users.nickname,Users.profileImg,title,content,insideColor,image,tag,IFNULL(commentsCount,0) as commentsCount,if(bookmarkId IS NULL, FALSE,TRUE) as bookmark,Posts.createdAt
+    FROM Posts LEFT JOIN CountTable  
     ON Posts.postId = CountTable.postId
     LEFT JOIN Users
     On Posts.userId = Users.userId
@@ -115,7 +117,7 @@ group by Posts.postId
   };
 
   findAllPostBookmark = async (diaryId, userId) => {
-    const query = `SELECT Posts.postId,Posts.userId,Users.nickname,title,image,tag,profileImg,IFNULL(commentsCount,0) as commentsCount
+    const query = `SELECT Posts.postId,Posts.userId,Users.nickname,title,image,tag,profileImg,IFNULL(commentsCount,0) as commentsCount,Posts.createdAt
     FROM Posts LEFT JOIN CountTable 
     ON Posts.postId = CountTable.postId
     LEFT JOIN Users
@@ -140,7 +142,7 @@ group by Posts.postId
 
   //타이틀로 검색
   searchPostTitle = async (diaryId, title) => {
-    const query = `SELECT Posts.postId,Posts.userId,Users.nickname,title,image,tag,profileImg,IFNULL(commentsCount,0) as commentsCount
+    const query = `SELECT Posts.postId,Posts.userId,Users.nickname,title,image,tag,profileImg,IFNULL(commentsCount,0) as commentsCount,Posts.createdAt
     FROM Posts LEFT JOIN CountTable 
     ON Posts.postId = CountTable.postId
     LEFT JOIN Users
@@ -156,7 +158,7 @@ group by Posts.postId
 
   //내용으로 검색
   searchPostContent = async (diaryId, content) => {
-    const query = `SELECT Posts.postId,Posts.userId,Users.nickname,title,image,tag,profileImg,IFNULL(commentsCount,0) as commentsCount
+    const query = `SELECT Posts.postId,Posts.userId,Users.nickname,title,image,tag,profileImg,IFNULL(commentsCount,0) as commentsCount,Posts.createdAt
     FROM Posts LEFT JOIN CountTable 
     ON Posts.postId = CountTable.postId
     LEFT JOIN Users
@@ -172,12 +174,12 @@ group by Posts.postId
 
   //태그로 검색
   searchPostTag = async (diaryId, tag) => {
-    const query = `SELECT Posts.postId,Posts.userId,Users.nickname,title,image,tag,profileImg,IFNULL(commentsCount,0) as commentsCount
+    const query = `SELECT Posts.postId,Posts.userId,Users.nickname,title,image,tag,profileImg,IFNULL(commentsCount,0) as commentsCount,Posts.createdAt
     FROM Posts LEFT JOIN CountTable 
     ON Posts.postId = CountTable.postId
     LEFT JOIN Users
     On Posts.userId = Users.userId
-    where Posts.diaryId = ${diaryId} and tag = '${tag}'
+    where Posts.diaryId = ${diaryId} and tag LIKE '${tag}'
    ORDER BY Posts.createdAt DESC
    `;
     const queryResult = await sequelize.query(query, {

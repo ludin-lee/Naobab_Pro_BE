@@ -15,10 +15,12 @@ class UserInfoRepository {
   };
   //회원정보 수정
   updateUser = async (userId, profileImg, nickname) => {
-    await this.userModel.update(
-      { profileImg, nickname },
-      { where: { userId } },
-    );
+    if (profileImg !== null)
+      await this.userModel.update(
+        { profileImg, nickname },
+        { where: { userId } },
+      );
+    else await this.userModel.update({ nickname }, { where: { userId } });
   };
 
   //비밀번호 변경
@@ -30,7 +32,7 @@ class UserInfoRepository {
   };
 
   //회원탈퇴
-  unregisterUSer = async (userId) => {
+  unregisterUser = async (userId) => {
     await this.userModel.destroy({ where: { userId } });
   };
 }
