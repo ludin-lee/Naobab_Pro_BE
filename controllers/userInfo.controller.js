@@ -29,17 +29,11 @@ class UserInfoController {
 
       if (req.file === undefined) {
         req.file = {};
-        req.file.location =
-          'https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png';
+        req.file.location = null;
       }
       const profileImg = req.file.location;
 
-      await this.userInfoService.updateUser(
-        userId,
-        profileImg,
-        currentPassword,
-        nickname,
-      );
+      await this.userInfoService.updateUser(userId, profileImg, nickname);
 
       return res
         .status(201)

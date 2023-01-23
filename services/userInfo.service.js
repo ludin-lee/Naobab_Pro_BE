@@ -19,19 +19,17 @@ class UserInfoService {
   };
 
   //회원정보 수정
-  updateUser = async (userId, profileImg, currentPassword, nickname) => {
+  updateUser = async (userId, profileImg, nickname) => {
     const userInfo = await this.userInfoRepository.findUserInfo(userId);
-    const hashedPassword = await bcrypt.hash(currentPassword, PASSWORD_SALT);
+    // const hashedPassword = await bcrypt.hash(currentPassword, PASSWORD_SALT);
 
-    const checkPassword = await bcrypt.compare(
-      currentPassword,
-      userInfo.password,
-    );
-    if (!checkPassword) throw new AuthorizationError('비밀번호를 확인해주세요');
+    // const checkPassword = await bcrypt.compare(
+    //   currentPassword,
+    //    userInfo.password,
+    //  );
+    //  if (!checkPassword) throw new AuthorizationError('비밀번호를 확인해주세요');
 
-    if (!profileImg || !nickname)
-      throw new ValidationError('모든 항목을 입력해주세요');
-
+    if (!nickname) throw new ValidationError('모든 항목을 입력해주세요');
     await this.userInfoRepository.updateUser(userId, profileImg, nickname);
   };
 

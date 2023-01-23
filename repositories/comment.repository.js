@@ -14,7 +14,7 @@ class CommentRepository {
   };
   //댓글 조회
   findPostComment = async (postId) => {
-    const query = `SELECT commentId,postId,comment,Comments.createdAt,Comments.updatedAt,Users.nickname
+    const query = `SELECT commentId,postId,comment,Comments.createdAt,Comments.updatedAt,Users.nickname,Users.profileImg
     FROM Comments
     LEFT JOIN Users
     On Comments.userId = Users.userId
