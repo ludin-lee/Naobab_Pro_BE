@@ -36,7 +36,6 @@ class UserInfoRepository {
     await this.userModel.destroy({ where: { userId } });
   };
   //닉네임으로 회원정보 조회
-
   findUserNickname = async (nickname) => {
     return await this.userModel.findOne({
       where: { nickname },
