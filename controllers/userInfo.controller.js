@@ -92,6 +92,22 @@ class UserInfoController {
       });
     }
   };
+
+  //닉네임으로 회원 조회
+  findUserNickname = async (req, res) => {
+    try {
+      const { nickname } = req.body;
+      const userInfo = await this.userInfoService.findUserNickname(nickname);
+
+      return res.status(201).json({ userInfo, result: true });
+    } catch (err) {
+      logger.error(err.message || err);
+      return res.status(err.status || 500).json({
+        result: false,
+        message: err.message || '유저 정보 조회에 실패하였습니다.',
+      });
+    }
+  };
 }
 
 module.exports = UserInfoController;
