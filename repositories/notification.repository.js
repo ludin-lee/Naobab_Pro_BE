@@ -38,13 +38,23 @@ class NotificationRepository {
     });
   };
 
-  //알림 만들기
+  //초대 및 일기 알림 만들기
   createNotification = async (code, userId, audienceId, diaryId) => {
     await this.notificationModel.create({
       code,
       userId,
       audienceId,
       diaryId,
+    });
+  };
+
+  //댓글 알림 만드기
+  createCommentsNotification = async (code, userId, audienceId, postId) => {
+    await this.notificationModel.create({
+      code,
+      userId,
+      audienceId,
+      postId,
     });
   };
   //알림 삭제

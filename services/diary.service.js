@@ -1,5 +1,6 @@
 const DiaryRepository = require('../repositories/diary.repository');
-const { Diaries } = require('../models');
+const NotificationRepository = require('../repositories/notification.repository');
+const { Diaries, Notifications } = require('../models');
 
 const {
   NotFoundError,
@@ -10,7 +11,7 @@ const {
 
 class DiaryService {
   diaryRepository = new DiaryRepository(Diaries);
-
+  notificationRepository = new NotificationRepository(Notifications);
   //다이어리 생성
   createDiary = async (
     userId,
@@ -95,6 +96,13 @@ class DiaryService {
     if (diary.invitedSecureId !== userId)
       throw new AuthorizationError('초대된 사용자가 아닙니다.');
     await this.diaryRepository.inviteDiary(userId, diaryId);
+
+    await this.notificationRepository.createNotification(
+      4, //4번코드 :다이어리 초대수락
+      diary.userId, // 다이어리 주인
+      userId, //   다이어리 수락한 사람
+      diaryId, //다이어리 번호
+    );
   };
 }
 

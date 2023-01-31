@@ -89,7 +89,8 @@ io.on('connection', (socket) => {
 
   // 초대 알림
   socket.on('invited', async (data) => {
-    // invitedUserId = 추천 받은 유저
+    // invitedUserId = 초대 받은 유저
+    //hostUsersId =  초대 보낸 유저
     let { diaryId, hostUserId, invitedUserId } = data;
     /*
     코드
