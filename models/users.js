@@ -10,10 +10,14 @@ module.exports = (sequelize, DataTypes) => {
     static associate(models) {
       this.hasMany(models.Diaries, { foreignKey: 'userId' });
       this.hasMany(models.Diaries, { foreignKey: 'invitedId' });
+      this.hasMany(models.Diaries, { foreignKey: 'invitedSecureId' });
       this.hasMany(models.Posts, { foreignKey: 'userId' });
       this.hasMany(models.Comments, { foreignKey: 'userId' });
       this.hasMany(models.Bookmark_diary, { foreignKey: 'userId' });
       this.hasMany(models.Bookmark_post, { foreignKey: 'userId' });
+      this.hasMany(models.Notifications, { foreignKey: 'userId' });
+      this.hasMany(models.Notifications, { foreignKey: 'audienceId' });
+      this.hasMany(models.Chats, { foreignKey: 'userId' });
     }
   }
   Users.init(

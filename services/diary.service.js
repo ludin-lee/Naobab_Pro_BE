@@ -5,6 +5,7 @@ const {
   NotFoundError,
   ValidationError,
   AuthorizationError,
+  BadRequestError,
 } = require('../exceptions/index.exception');
 
 class DiaryService {
@@ -82,6 +83,18 @@ class DiaryService {
       throw new AuthorizationError('권한이 없습니다');
 
     await this.diaryRepository.deleteDiary(userId, diaryId);
+  };
+
+  //다이어리 초대 수락
+  inviteDiary = async (userId, diaryId) => {
+    const diary = await this.diaryRepository.exDiary(diaryId);
+
+    if (!diary) throw new NotFoundError('다이어리가 존재하지 않습니다.');
+    if (diary.couple !== true)
+      throw new BadRequestError('공유다이어리가 아닙니다.');
+    if (diary.invitedSecureId !== userId)
+      throw new AuthorizationError('초대된 사용자가 아닙니다.');
+    await this.diaryRepository.inviteDiary(userId, diaryId);
   };
 }
 

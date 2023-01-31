@@ -96,7 +96,7 @@ class UserInfoController {
   //닉네임으로 회원 조회
   findUserNickname = async (req, res) => {
     try {
-      const { nickname } = req.body;
+      const { nickname } = req.params;
       const userInfo = await this.userInfoService.findUserNickname(nickname);
 
       return res.status(201).json({ userInfo, result: true });

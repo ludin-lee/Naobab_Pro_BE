@@ -12,6 +12,7 @@ module.exports = (sequelize, DataTypes) => {
       this.belongsTo(models.Diaries, { foreignKey: 'diaryId' });
       this.hasMany(models.Comments, { foreignKey: 'postId' });
       this.hasMany(models.Bookmark_post, { foreignKey: 'postId' });
+      this.hasMany(models.Notifications, { foreignKey: 'postId' });
     }
   }
   Posts.init(

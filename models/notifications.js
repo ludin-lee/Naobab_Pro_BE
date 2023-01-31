@@ -1,7 +1,7 @@
 'use strict';
-const { Model } = require('sequelize');
+const { Model, BOOLEAN } = require('sequelize');
 module.exports = (sequelize, DataTypes) => {
-  class Chats extends Model {
+  class Notifications extends Model {
     /**
      * Helper method for defining associations.
      * This method is not a part of Sequelize lifecycle.
@@ -10,24 +10,20 @@ module.exports = (sequelize, DataTypes) => {
     static associate(models) {
       this.belongsTo(models.Users, { foreignKey: 'userId' });
       this.belongsTo(models.Diaries, { foreignKey: 'diaryId' });
+      this.belongsTo(models.Posts, { foreignKey: 'postId' });
     }
   }
-  Chats.init(
+  Notifications.init(
     {
-      ChatId: {
+      notificationId: {
         allowNull: false,
         autoIncrement: true,
         primaryKey: true,
         type: DataTypes.INTEGER,
       },
-      roomId: {
+      code: {
         allowNull: false,
         type: DataTypes.INTEGER,
-        references: {
-          model: 'Diaries',
-          key: 'diaryId',
-        },
-        onDelete: 'CASCADE',
       },
       userId: {
         allowNull: false,
@@ -35,12 +31,38 @@ module.exports = (sequelize, DataTypes) => {
         references: {
           model: 'Users',
           key: 'userId',
+          as: 'userId',
         },
         onDelete: 'CASCADE',
       },
-      chat: {
+      audienceId: {
         allowNull: false,
-        type: DataTypes.STRING,
+        type: DataTypes.INTEGER,
+        references: {
+          model: 'Users',
+          key: 'userId',
+          as: 'audienceId',
+        },
+      },
+      diaryId: {
+        type: DataTypes.INTEGER,
+        references: {
+          model: 'Diaries',
+          key: 'diaryId',
+        },
+        onDelete: 'CASCADE',
+      },
+      postId: {
+        type: DataTypes.INTEGER,
+        references: {
+          model: 'Posts',
+          key: 'postId',
+        },
+        onDelete: 'CASCADE',
+      },
+      confirm: {
+        type: BOOLEAN,
+        defaultValue: false,
       },
       createdAt: {
         allowNull: false,
@@ -53,8 +75,8 @@ module.exports = (sequelize, DataTypes) => {
     },
     {
       sequelize,
-      modelName: 'Chats',
+      modelName: 'Notifications',
     },
   );
-  return Chats;
+  return Notifications;
 };

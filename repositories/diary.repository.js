@@ -90,6 +90,11 @@ class DiaryRepository {
     });
     return queryResult;
   };
+
+  //다이어리 초대수락
+  inviteDiary = async (userId, diaryId) => {
+    await this.diaryModel.update({ invitedId: userId }, { where: { diaryId } });
+  };
 }
 
 module.exports = DiaryRepository;

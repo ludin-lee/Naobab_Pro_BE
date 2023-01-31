@@ -100,6 +100,25 @@ class DiaryController {
       });
     }
   };
+  //다이어리 초대 수락
+  inviteDiary = async (req, res) => {
+    try {
+      const userId = res.locals.userId - SECRET_SUM;
+      const { diaryId } = req.params;
+
+      await this.diaryService.inviteDiary(userId, diaryId);
+
+      return res
+        .status(201)
+        .json({ message: '다이어리 초대 수락 성공', result: true });
+    } catch (err) {
+      logger.error(err.message || err);
+      return res.status(err.status || 500).json({
+        result: false,
+        message: err.message || '다이어리 초대에 실패하였습니다.',
+      });
+    }
+  };
 }
 
 module.exports = DiaryController;

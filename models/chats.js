@@ -1,7 +1,7 @@
 'use strict';
 const { Model } = require('sequelize');
 module.exports = (sequelize, DataTypes) => {
-  class Nontifications extends Model {
+  class Chats extends Model {
     /**
      * Helper method for defining associations.
      * This method is not a part of Sequelize lifecycle.
@@ -10,20 +10,24 @@ module.exports = (sequelize, DataTypes) => {
     static associate(models) {
       this.belongsTo(models.Users, { foreignKey: 'userId' });
       this.belongsTo(models.Diaries, { foreignKey: 'diaryId' });
-      this.belongsTo(models.Posts, { foreignKey: 'postId' });
     }
   }
-  Nontifications.init(
+  Chats.init(
     {
-      nonficationId: {
+      ChatId: {
         allowNull: false,
         autoIncrement: true,
         primaryKey: true,
         type: DataTypes.INTEGER,
       },
-      code: {
+      diaryId: {
         allowNull: false,
         type: DataTypes.INTEGER,
+        references: {
+          model: 'Diaries',
+          key: 'diaryId',
+        },
+        onDelete: 'CASCADE',
       },
       userId: {
         allowNull: false,
@@ -34,29 +38,9 @@ module.exports = (sequelize, DataTypes) => {
         },
         onDelete: 'CASCADE',
       },
-      audienceIdId: {
+      chat: {
         allowNull: false,
-        type: DataTypes.INTEGER,
-        references: {
-          model: 'Users',
-          key: 'userId',
-        },
-      },
-      diaryId: {
-        type: DataTypes.INTEGER,
-        references: {
-          model: 'Diaries',
-          key: 'diaryId',
-        },
-        onDelete: 'CASCADE',
-      },
-      postId: {
-        type: DataTypes.INTEGER,
-        references: {
-          model: 'Posts',
-          key: 'postId',
-        },
-        onDelete: 'CASCADE',
+        type: DataTypes.STRING,
       },
       createdAt: {
         allowNull: false,
@@ -69,8 +53,8 @@ module.exports = (sequelize, DataTypes) => {
     },
     {
       sequelize,
-      modelName: 'Nontifications',
+      modelName: 'Chats',
     },
   );
-  return Nontifications;
+  return Chats;
 };

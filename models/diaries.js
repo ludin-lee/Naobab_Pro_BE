@@ -11,6 +11,8 @@ module.exports = (sequelize, DataTypes) => {
       this.belongsTo(models.Users, { foreignKey: 'userId' });
       this.hasMany(models.Posts, { foreignKey: 'diaryId' });
       this.hasMany(models.Bookmark_diary, { foreignKey: 'diaryId' });
+      this.hasMany(models.Chats, { foreignKey: 'diaryId' });
+      this.hasMany(models.Notifications, { foreignKey: 'diaryId' });
     }
   }
   Diaries.init(
@@ -59,6 +61,14 @@ module.exports = (sequelize, DataTypes) => {
         onDelete: 'CASCADE',
       },
       invitedId: {
+        allowNull: true,
+        type: DataTypes.INTEGER,
+        references: {
+          model: 'Users', // Users 테이블에
+          key: 'userId', // userId column 과 관계를 맺음
+        },
+      },
+      invitedSecureId: {
         allowNull: true,
         type: DataTypes.INTEGER,
         references: {

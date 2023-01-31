@@ -18,6 +18,14 @@ class CommentService {
     if (!post) throw new ValidationError('존재하지 않는 글입니다.');
 
     await this.commentRepository.createComment(comment, userId, postId);
+
+    if (userId !== post.userId)
+      await this.NotificationsRepository.createNotification(
+        3,
+        userId,
+        post.userId,
+        postId,
+      );
   };
 
   //댓글 조회하기
