@@ -74,6 +74,7 @@ class UserInfoService {
 
     await this.userInfoRepository.unregisterUser(userId);
   };
+
   //닉네임 회원정보 조회
   findUserNickname = async (nickname, userId) => {
     const userInfo = await this.userInfoRepository.findUserNickname(nickname);

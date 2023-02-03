@@ -93,6 +93,7 @@ class UserInfoController {
     }
   };
 
+
   //닉네임으로 회원 조회
   findUserNickname = async (req, res) => {
     try {

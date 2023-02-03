@@ -9,4 +9,5 @@ router.patch('/profile', upload.single('image'), userInfoController.updateUser);
 router.patch('/password', userInfoController.updatePassWord); //패스워드 변경
 router.patch('/unregister', userInfoController.unregisterUSer); //탈퇴
 router.get('/nickname/:nickname', userInfoController.findUserNickname); //닉네임으로 조회
+
 module.exports = router;
