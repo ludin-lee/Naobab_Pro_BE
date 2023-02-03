@@ -27,7 +27,7 @@ class BookmarkService {
   createDiaryBookmark = async (diaryId, userId) => {
     const exDiary = await this.diaryRepository.exDiary(diaryId);
     if (!exDiary) throw new ValidationError('존재하지 않는 다이어리입니다.');
-    if (exDiary.userId !== userId)
+    if (exDiary.userId !== userId && exDiary.invitedId !== userId)
       throw new AuthorizationError('권한이 없습니다');
 
     await this.bookmarkRepository.createDiaryBookmark(diaryId, userId);
@@ -36,7 +36,7 @@ class BookmarkService {
   deleteDiaryBookmark = async (diaryId, userId) => {
     const exDiary = await this.diaryRepository.exDiary(diaryId);
     if (!exDiary) throw new ValidationError('존재하지 않는 다이어리입니다.');
-    if (exDiary.userId !== userId)
+    if (exDiary.userId !== userId && exDiary.invitedId !== userId)
       throw new AuthorizationError('권한이 없습니다');
 
     await this.bookmarkRepository.deleteDiaryBookmark(diaryId, userId);
@@ -55,8 +55,10 @@ class BookmarkService {
   //일기장 북마크 생성
   createPostBookmark = async (postId, userId) => {
     const exPost = await this.postRepository.findDetailPost(postId);
+    const exDiary = await this.diaryRepository.exDiary(exPost.diaryId);
+
     if (!exPost) throw new ValidationError('존재하지 않는 일기장입니다.');
-    if (exPost.userId !== userId)
+    if (exDiary.invitedId !== userId && exDiary.userId !== userId)
       throw new AuthorizationError('권한이 없습니다');
 
     await this.bookmarkRepository.createPostBookmark(postId, userId);
@@ -64,8 +66,9 @@ class BookmarkService {
   //일기장 북마크 삭제
   deletePostBookmark = async (postId, userId) => {
     const exPost = await this.postRepository.findDetailPost(postId);
+    const exDiary = await this.diaryRepository.exDiary(exPost.diaryId);
     if (!exPost) throw new ValidationError('존재하지 않는 일기장입니다.');
-    if (exPost.userId !== userId)
+    if (exDiary.invitedId !== userId && exDiary.userId !== userId)
       throw new AuthorizationError('권한이 없습니다');
 
     await this.bookmarkRepository.deletePostBookmark(postId, userId);

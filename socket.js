@@ -99,21 +99,59 @@ io.on('connection', (socket) => {
     댓글: 3
     초대 수락: 4
     */
-    await Diaries.update(
-      { invitedSecureId: invitedUserId },
-      { where: { diaryId } },
-    );
 
-    const notification = await Notification.create({
-      code: 1,
-      userId: invitedUserId,
-      audienceId: hostUserId,
-      diaryId,
-      postId: null,
-      confirm: false,
+    const diary = await Diaries.findOne({ where: { diaryId } }); //해당 다이어리 정보 조회
+
+    // if (diary.invitedId) io.to(`canNotInvite`).emit(diary.diaryName);
+    if (diary.invitedId) io.emit('canNotInvite', 'false');
+    //다이어리에 이미 초대된 사람 있으면 해당 이벤트로 다이어리 이름 과 함께소켓 발생
+    else {
+      //아니면 원래대로
+      await Diaries.update(
+        { invitedSecureId: invitedUserId },
+        { where: { diaryId } },
+      );
+
+      const [caseOne, caseTwo] = await Notifications.findOrCreate({
+        //이미 있는 알람이면 만들지 않음 없으면 만듬
+        where: {
+          code: 1,
+          userId: invitedUserId,
+          audienceId: hostUserId,
+          diaryId,
+        },
+        default: {
+          code: 1,
+          userId: invitedUserId,
+          audienceId: hostUserId,
+          diaryId,
+          postId: null,
+          confirm: false,
+        },
+      });
+      console.log(caseOne);
+      console.log(caseTwo);
+      io.emit(`invite:${invitedUserId}`, caseTwo || caseOne, 'true');
+    }
+  });
+
+  //초대 수락시 데이터베이스에서 삭제
+  socket.on('invitedAccept', async (data) => {
+    // invitedUserId = 초대 받은 유저
+    //hostUsersId =  초대 보낸 유저
+    let { notification } = data;
+    /*
+    코드
+    초대: 1
+    상대방 일기씀: 2
+    댓글: 3
+    초대 수락: 4
+    */
+    await Notifications.destrory({
+      where: { notificationId: notification.notificationId },
     });
 
-    io.to(`invite:${invitedUserId}`).emit(notification);
+    io.to(`inviteAccept:${notification.notificationId}`).emit(notification);
   });
 });
 

@@ -4,6 +4,7 @@ const bcrypt = require('bcryptjs');
 const {
   ValidationError,
   AuthorizationError,
+  BadRequestError,
 } = require('../exceptions/index.exception');
 const PASSWORD_SALT = parseInt(process.env.PASSWORD_SALT);
 
@@ -74,8 +75,10 @@ class UserInfoService {
     await this.userInfoRepository.unregisterUser(userId);
   };
   //닉네임 회원정보 조회
-  findUserNickname = async (nickname) => {
+  findUserNickname = async (nickname, userId) => {
     const userInfo = await this.userInfoRepository.findUserNickname(nickname);
+    if (userInfo.userId === userId)
+      throw new BadRequestError('본인은 검색할 수 없습니다.');
     if (!userInfo) throw new ValidationError('유저가 존재하지 않습니다.');
 
     return userInfo;

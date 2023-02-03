@@ -18,7 +18,7 @@ router.get(
 
 router.get('/login/naver', SocialLogin.Naver);
 router.get(
-  'login/naver/callback',
+  '/login/naver/callback',
   SocialLogin.NaverCallBack,
   SocialLogin.ResponseToken,
 );

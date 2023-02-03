@@ -8,8 +8,8 @@ class NotificationRepository {
 
   //알림 조회
   findNotification = async (userId) => {
-    const query = `select notificationId, code, Notifications.userId,nickname,audienceId,Notifications.diaryId,diaryName,confirm,Notifications.createdAt,
-    (select nickname from Users  where userId = Notifications.audienceId) as audienceNickname
+    const query = `select notificationId, code, Notifications.userId,nickname,audienceId,Notifications.diaryId,diaryName,postId,confirm,Notifications.createdAt,
+    (select nickname from Users  where userId = Notifications.audienceId) as audienceNickname,comment
     from Notifications
     LEFT JOIN  Diaries
     On Notifications.diaryId = Diaries.diaryId 
@@ -49,12 +49,21 @@ class NotificationRepository {
   };
 
   //댓글 알림 만드기
-  createCommentsNotification = async (code, userId, audienceId, postId) => {
+  createCommentsNotification = async (
+    code,
+    userId,
+    audienceId,
+    diaryId,
+    postId,
+    comment,
+  ) => {
     await this.notificationModel.create({
       code,
       userId,
       audienceId,
+      diaryId,
       postId,
+      comment,
     });
   };
   //알림 삭제

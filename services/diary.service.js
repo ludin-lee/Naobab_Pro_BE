@@ -48,7 +48,6 @@ class DiaryService {
   patchDiary = async (
     diaryId,
     userId,
-    couple,
     diaryName,
     outsideColor,
     insideColor,
@@ -65,7 +64,6 @@ class DiaryService {
 
     await this.diaryRepository.patchDiary(
       diaryId,
-      couple,
       diaryName,
       outsideColor,
       insideColor,
@@ -80,14 +78,16 @@ class DiaryService {
 
     if (!diary) throw new NotFoundError('다이어리가 존재하지 않습니다.');
 
-    if (diary.userId !== userId)
+    if (diary.invitedId === userId)
+      await this.diaryRepository.deleteInvite(diaryId);
+    else if (diary.userId !== userId) {
       throw new AuthorizationError('권한이 없습니다');
-
-    await this.diaryRepository.deleteDiary(userId, diaryId);
+    } else if (diary.userId === userId)
+      await this.diaryRepository.deleteDiary(userId, diaryId);
   };
 
   //다이어리 초대 수락
-  inviteDiary = async (userId, diaryId) => {
+  inviteDiary = async (userId, diaryId, notificationId) => {
     const diary = await this.diaryRepository.exDiary(diaryId);
 
     if (!diary) throw new NotFoundError('다이어리가 존재하지 않습니다.');
@@ -103,6 +103,7 @@ class DiaryService {
       userId, //   다이어리 수락한 사람
       diaryId, //다이어리 번호
     );
+    await this.notificationRepository.deleteNotification(notificationId);
   };
 }
 

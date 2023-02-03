@@ -60,8 +60,13 @@ module.exports = (sequelize, DataTypes) => {
         },
         onDelete: 'CASCADE',
       },
+      comment: {
+        type: DataTypes.STRING,
+        defaultValue: false,
+        allowNull: true,
+      },
       confirm: {
-        type: BOOLEAN,
+        type: DataTypes.BOOLEAN,
         defaultValue: false,
       },
       createdAt: {

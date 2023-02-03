@@ -29,13 +29,14 @@ class DiaryRepository {
   //다이어리 조회
   findDiary = async (userId) => {
     const query = `select Diaries.diaryId, couple, diaryName,outsideColor,insideColor,sticker,design,if(bookmarkId IS NULL, FALSE,TRUE) as bookmark,nickname,
-    (select nickname from Users  where userId = Diaries.invitedId) as invitedNickname
+    (select nickname from Users  where userId = Diaries.invitedId) as invitedNickname,
+    (select profileImg from Users  where userId = Diaries.invitedId) as invitedProfileImg
     from Diaries 
     LEFT JOIN  Bookmark_diaries
     On Diaries.diaryId = Bookmark_diaries.diaryId 
     LEFT JOIN Users
     On Diaries.userId = Users.userId
-    where Diaries.userId = ${userId}
+    where Diaries.userId = ${userId} or Diaries.invitedId = ${userId}
    `;
     const queryResult = await sequelize.query(query, {
       type: QueryTypes.SELECT,
@@ -46,7 +47,6 @@ class DiaryRepository {
   //다이어리 수정
   patchDiary = async (
     diaryId,
-    couple,
     diaryName,
     outsideColor,
     insideColor,
@@ -55,7 +55,6 @@ class DiaryRepository {
   ) => {
     await this.diaryModel.update(
       {
-        couple,
         diaryName,
         outsideColor,
         insideColor,
@@ -69,6 +68,11 @@ class DiaryRepository {
   //다이어리 삭제
   deleteDiary = async (userId, diaryId) => {
     await this.diaryModel.destroy({ userId, where: { diaryId } });
+  };
+
+  //공유 다이어리에서 초대된 사람 지우기
+  deleteInvite = async (diaryId) => {
+    await this.diaryModel.update({ invitedId: null }, { where: { diaryId } });
   };
 
   //다이어리 ID로 조회

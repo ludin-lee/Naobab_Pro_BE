@@ -55,13 +55,12 @@ class DiaryController {
     try {
       const userId = res.locals.userId - SECRET_SUM;
       const { diaryId } = req.params;
-      const { couple, diaryName, outsideColor, insideColor, sticker, design } =
+      const { diaryName, outsideColor, insideColor, sticker, design } =
         req.body;
 
       await this.diaryService.patchDiary(
         diaryId,
         userId,
-        couple,
         diaryName,
         outsideColor,
         insideColor,
@@ -104,9 +103,9 @@ class DiaryController {
   inviteDiary = async (req, res) => {
     try {
       const userId = res.locals.userId - SECRET_SUM;
-      const { diaryId } = req.params;
+      const { diaryId, notificationId } = req.params;
 
-      await this.diaryService.inviteDiary(userId, diaryId);
+      await this.diaryService.inviteDiary(userId, diaryId, notificationId);
 
       return res
         .status(201)

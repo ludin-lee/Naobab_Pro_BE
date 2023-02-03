@@ -23,9 +23,11 @@ class CommentService {
     if (userId !== post.userId)
       await this.notificationsRepository.createCommentsNotification(
         3,
-        userId,
         post.userId,
+        userId,
+        post.diaryId,
         postId,
+        comment,
       );
   };
 

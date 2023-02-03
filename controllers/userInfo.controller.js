@@ -78,7 +78,7 @@ class UserInfoController {
       const userId = res.locals.userId - SECRET_SUM;
       const { currentPassword } = req.body;
 
-      await this.userInfoService.unregisterUSer(userId, currentPassword);
+      await this.userInfoService.unregisterUser(userId, currentPassword);
 
       return res.status(201).json({
         message: '회원 탈퇴가 정상적으로 이루어졌습니다.',
@@ -97,7 +97,11 @@ class UserInfoController {
   findUserNickname = async (req, res) => {
     try {
       const { nickname } = req.params;
-      const userInfo = await this.userInfoService.findUserNickname(nickname);
+      const userId = res.locals.userId - SECRET_SUM;
+      const userInfo = await this.userInfoService.findUserNickname(
+        nickname,
+        userId,
+      );
 
       return res.status(201).json({ userInfo, result: true });
     } catch (err) {
