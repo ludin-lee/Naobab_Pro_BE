@@ -1,14 +1,15 @@
 const PostRepository = require('../repositories/post.repository');
 const DiaryRepository = require('../repositories/diary.repository');
 const BookmarkRepository = require('../repositories/bookmark.repository');
-const CommentsRepository = require('../repositories/comment.repository');
-
+const CommentRepository = require('../repositories/comment.repository');
+const NotificationRepository = require('../repositories/notification.repository');
 const {
   Posts,
   Diaries,
   Bookmark_post,
   Bookmark_diary,
   Comments,
+  Notifications,
 } = require('../models');
 
 const {
@@ -21,7 +22,8 @@ class PostService {
   postRepository = new PostRepository(Posts);
   diaryRepository = new DiaryRepository(Diaries);
   bookmarkRepository = new BookmarkRepository(Bookmark_diary, Bookmark_post);
-  commentsRepository = new CommentsRepository(Comments);
+  commentRepository = new CommentRepository(Comments);
+  notificationRepository = new NotificationRepository(Notifications);
   //일기장 생성
   createPost = async (
     userId,
@@ -51,6 +53,13 @@ class PostService {
       tag,
       createdAt,
     );
+    if (diary.couple && diary.invitedId)
+      await this.notificationRepository.createNotification(
+        2,
+        userId === diary.userId ? diary.invitedId : diary.userId,
+        userId,
+        diaryId,
+      );
   };
 
   //일기장 전체 조회
@@ -93,7 +102,7 @@ class PostService {
     if (!bookmark) post.bookmark = false;
     else post.bookmark = true;
 
-    post.comments = await this.commentsRepository.findPostComment(post.postId);
+    post.comments = await this.commentRepository.findPostComment(post.postId);
 
     return post;
   };

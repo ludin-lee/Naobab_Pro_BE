@@ -12,7 +12,7 @@ class SocialLogin {
   //? 위에서 카카오 서버 로그인이 되면, 카카오 redirect url 설정에 따라 이쪽 라우터로 오게 된다.
   // router.get("/kakao/callback", passport.authenticate("kakao",{option}));
   KakaoCallBack = passport.authenticate('kakao', {
-    // successRedirect: "/", // kakaoStrategy에서 성공한다면 이 주소로 이동
+    // successRedirect: 'https://finale-omega.vercel.app', // kakaoStrategy에서 성공한다면 이 주소로 이동
     failureRedirect: 'http://127.0.0.1:3000', // kakaoStrategy에서 실패한다면 이 주소로 이동
     // successFlash: "성공적", // 성공시 플래시 메시지 출력
     // failureFlash: true, //실패시 플래시 메시지 출력여부
@@ -22,7 +22,7 @@ class SocialLogin {
 
   NaverCallBack = passport.authenticate('naver', {
     // successRedirect: "/", // kakaoStrategy에서 성공한다면 이 주소로 이동
-    failureRedirect: 'http://127.0.0.1', // kakaoStrategy에서 실패한다면 이 주소로 이동
+    failureRedirect: 'http://127.0.0.1:3000', // kakaoStrategy에서 실패한다면 이 주소로 이동
     // successFlash: "성공적", // 성공시 플래시 메시지 출력
     // failureFlash: true, //실패시 플래시 메시지 출력여부
   });

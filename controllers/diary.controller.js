@@ -55,13 +55,12 @@ class DiaryController {
     try {
       const userId = res.locals.userId - SECRET_SUM;
       const { diaryId } = req.params;
-      const { couple, diaryName, outsideColor, insideColor, sticker, design } =
+      const { diaryName, outsideColor, insideColor, sticker, design } =
         req.body;
 
       await this.diaryService.patchDiary(
         diaryId,
         userId,
-        couple,
         diaryName,
         outsideColor,
         insideColor,
@@ -97,6 +96,25 @@ class DiaryController {
       return res.status(err.status || 500).json({
         result: false,
         message: err.message || '다이어리 삭제에 실패하였습니다.',
+      });
+    }
+  };
+  //다이어리 초대 수락
+  inviteDiary = async (req, res) => {
+    try {
+      const userId = res.locals.userId - SECRET_SUM;
+      const { diaryId, notificationId } = req.params;
+
+      await this.diaryService.inviteDiary(userId, diaryId, notificationId);
+
+      return res
+        .status(201)
+        .json({ message: '다이어리 초대 수락 성공', result: true });
+    } catch (err) {
+      logger.error(err.message || err);
+      return res.status(err.status || 500).json({
+        result: false,
+        message: err.message || '다이어리 초대에 실패하였습니다.',
       });
     }
   };

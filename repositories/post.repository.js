@@ -40,7 +40,6 @@ group by Posts.postId
 
   //일기장 전체 조회
   findPost = async (diaryId) => {
-
     const query = `SELECT Posts.postId,Posts.userId,Users.nickname,title,image,tag,profileImg,IFNULL(commentsCount,0) as commentsCount,if(bookmarkId IS NULL, FALSE,TRUE) as bookmark,Posts.createdAt
     FROM Posts LEFT JOIN CountTable 
     ON Posts.postId = CountTable.postId
@@ -59,8 +58,7 @@ group by Posts.postId
 
   //일기장 상세 조회
   findDetailPost = async (postId) => {
-
-    const query = `SELECT Posts.postId,Posts.diaryId,Posts.userId,Users.nickname,Users.profileImg,title,content,insideColor,image,tag,IFNULL(commentsCount,0) as commentsCount,if(bookmarkId IS NULL, FALSE,TRUE) as bookmark,Posts.createdAt
+    const query = `SELECT Posts.postId,Posts.diaryId,Posts.userId,Users.nickname,Users.profileImg,title,content,insideColor,image,weather,tag,IFNULL(commentsCount,0) as commentsCount,if(bookmarkId IS NULL, FALSE,TRUE) as bookmark,Posts.createdAt
     FROM Posts LEFT JOIN CountTable  
     ON Posts.postId = CountTable.postId
     LEFT JOIN Users

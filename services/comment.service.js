@@ -1,6 +1,7 @@
 const CommentRepository = require('../repositories/comment.repository');
 const PostRepository = require('../repositories/post.repository');
-const { Comments, Posts } = require('../models');
+const NotificationsRepository = require('../repositories/notification.repository');
+const { Comments, Posts, Notifications } = require('../models');
 const {
   ValidationError,
   AuthorizationError,
@@ -9,7 +10,7 @@ const {
 class CommentService {
   commentRepository = new CommentRepository(Comments);
   postRepository = new PostRepository(Posts);
-
+  notificationsRepository = new NotificationsRepository(Notifications);
   //댓글 생성하기
   createComment = async (comment, userId, postId) => {
     if (!comment) throw new ValidationError('내용을 입력해주세요');
@@ -18,6 +19,16 @@ class CommentService {
     if (!post) throw new ValidationError('존재하지 않는 글입니다.');
 
     await this.commentRepository.createComment(comment, userId, postId);
+
+    if (userId !== post.userId)
+      await this.notificationsRepository.createCommentsNotification(
+        3,
+        post.userId,
+        userId,
+        post.diaryId,
+        postId,
+        comment,
+      );
   };
 
   //댓글 조회하기

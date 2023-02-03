@@ -1,15 +1,17 @@
 const DiaryRepository = require('../repositories/diary.repository');
-const { Diaries } = require('../models');
+const NotificationRepository = require('../repositories/notification.repository');
+const { Diaries, Notifications } = require('../models');
 
 const {
   NotFoundError,
   ValidationError,
   AuthorizationError,
+  BadRequestError,
 } = require('../exceptions/index.exception');
 
 class DiaryService {
   diaryRepository = new DiaryRepository(Diaries);
-
+  notificationRepository = new NotificationRepository(Notifications);
   //다이어리 생성
   createDiary = async (
     userId,
@@ -46,7 +48,6 @@ class DiaryService {
   patchDiary = async (
     diaryId,
     userId,
-    couple,
     diaryName,
     outsideColor,
     insideColor,
@@ -63,7 +64,6 @@ class DiaryService {
 
     await this.diaryRepository.patchDiary(
       diaryId,
-      couple,
       diaryName,
       outsideColor,
       insideColor,
@@ -78,10 +78,32 @@ class DiaryService {
 
     if (!diary) throw new NotFoundError('다이어리가 존재하지 않습니다.');
 
-    if (diary.userId !== userId)
+    if (diary.invitedId === userId)
+      await this.diaryRepository.deleteInvite(diaryId);
+    else if (diary.userId !== userId) {
       throw new AuthorizationError('권한이 없습니다');
+    } else if (diary.userId === userId)
+      await this.diaryRepository.deleteDiary(userId, diaryId);
+  };
 
-    await this.diaryRepository.deleteDiary(userId, diaryId);
+  //다이어리 초대 수락
+  inviteDiary = async (userId, diaryId, notificationId) => {
+    const diary = await this.diaryRepository.exDiary(diaryId);
+
+    if (!diary) throw new NotFoundError('다이어리가 존재하지 않습니다.');
+    if (diary.couple !== true)
+      throw new BadRequestError('공유다이어리가 아닙니다.');
+    if (diary.invitedSecureId !== userId)
+      throw new AuthorizationError('초대된 사용자가 아닙니다.');
+    await this.diaryRepository.inviteDiary(userId, diaryId);
+
+    await this.notificationRepository.createNotification(
+      4, //4번코드 :다이어리 초대수락
+      diary.userId, // 다이어리 주인
+      userId, //   다이어리 수락한 사람
+      diaryId, //다이어리 번호
+    );
+    await this.notificationRepository.deleteNotification(notificationId);
   };
 }
 
