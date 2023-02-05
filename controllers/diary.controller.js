@@ -100,12 +100,16 @@ class DiaryController {
     }
   };
   //다이어리 초대 수락
-  inviteDiary = async (req, res) => {
+  inviteAcceptDiary = async (req, res) => {
     try {
       const userId = res.locals.userId - SECRET_SUM;
       const { diaryId, notificationId } = req.params;
 
-      await this.diaryService.inviteDiary(userId, diaryId, notificationId);
+      await this.diaryService.inviteAcceptDiary(
+        userId,
+        diaryId,
+        notificationId,
+      );
 
       return res
         .status(201)
@@ -114,7 +118,40 @@ class DiaryController {
       logger.error(err.message || err);
       return res.status(err.status || 500).json({
         result: false,
+        message: err.message || '다이어리 초대수락에 실패하였습니다.',
+      });
+    }
+  };
+
+  inviteDiary = async (req, res) => {
+    try {
+      const userId = res.locals.userId - SECRET_SUM;
+      const { diaryId, invitedId } = req.params;
+
+      await this.diaryService.inviteDiary(userId, diaryId, invitedId);
+      return res
+        .status(201)
+        .json({ message: '다이어리 초대  성공', result: true });
+    } catch (err) {
+      logger.error(err.message || err);
+      return res.status(err.status || 500).json({
+        result: false,
         message: err.message || '다이어리 초대에 실패하였습니다.',
+      });
+    }
+  };
+  //공유 다이어리 조회
+  findShareDiary = async (req, res) => {
+    try {
+      const userId = res.locals.userId - SECRET_SUM;
+      const diary = await this.diaryService.findShareDiary(userId);
+
+      return res.status(200).json({ diaries: diary, result: true });
+    } catch (err) {
+      logger.error(err.message || err);
+      return res.status(err.status || 500).json({
+        result: false,
+        message: err.message || '공유 다이어리 조회에 실패하였습니다.',
       });
     }
   };
