@@ -58,13 +58,13 @@ io.on('connection', (socket) => {
   // 채팅 받아 저장 후, 전달
   socket.on('chat_message', async (data) => {
     let { message, roomId, userId } = data;
-
+    socket.join(`room:${roomId}`);
     const today = dayjs().tz().format('YYYY-MM-DD 00:00:00');
     const chatTime = new Date(today).setHours(new Date(today).getHours() - 9);
 
     const [caseOne, caseTwo] = await Chats.findOrCreate({
       where: { diaryId: roomId, createdAt: { [Op.gt]: chatTime } },
-      default: {
+      defaults: {
         diaryId: roomId,
         userId: ADMIN, //관리자 키
         chat: `${dayjs(today).format('YYYY년 MM월 DD일')}`,
@@ -84,7 +84,7 @@ io.on('connection', (socket) => {
       nickname: userInfo.nickname,
       time: dayjs(new Date()).format(),
     };
-    io.to(`room:${roomId}`).emit(newMessage); //채팅시 채팅방에 알림 생기게 프론트에서 소켓 콜백함수를 조정해야함
+    socket.to(`room:${roomId}`).emit(newMessage); //채팅시 채팅방에 알림 생기게 프론트에서 소켓 콜백함수를 조정해야함
   });
 
   // 초대 알림
@@ -103,7 +103,7 @@ io.on('connection', (socket) => {
     const diary = await Diaries.findOne({ where: { diaryId } }); //해당 다이어리 정보 조회
 
     // if (diary.invitedId) io.to(`canNotInvite`).emit(diary.diaryName);
-    if (diary.invitedId) io.emit('canNotInvite', 'false');
+    if (diary.invitedId) socket.to(diaryId).emit('canNotInvite', 'false');
     //다이어리에 이미 초대된 사람 있으면 해당 이벤트로 다이어리 이름 과 함께소켓 발생
     else {
       //아니면 원래대로
@@ -129,9 +129,7 @@ io.on('connection', (socket) => {
           confirm: false,
         },
       });
-      console.log(caseOne);
-      console.log(caseTwo);
-      io.emit(`invite:${invitedUserId}`, caseTwo || caseOne, 'true');
+      socket.to(`invite:${invitedUserId}`).emit(caseTwo || caseOne, 'true');
     }
   });
 

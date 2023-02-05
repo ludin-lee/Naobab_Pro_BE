@@ -28,7 +28,7 @@ class DiaryRepository {
 
   //다이어리 조회
   findDiary = async (userId) => {
-    const query = `select Diaries.diaryId, couple, diaryName,outsideColor,insideColor,sticker,design,if(bookmarkId IS NULL, FALSE,TRUE) as bookmark,nickname,
+    const query = `select Diaries.diaryId, couple, diaryName,outsideColor,insideColor,sticker,design,if(bookmarkId IS NULL, FALSE,TRUE) as bookmark,nickname,profileImg,invitedId,
     (select nickname from Users  where userId = Diaries.invitedId) as invitedNickname,
     (select profileImg from Users  where userId = Diaries.invitedId) as invitedProfileImg
     from Diaries 
@@ -41,6 +41,14 @@ class DiaryRepository {
     const queryResult = await sequelize.query(query, {
       type: QueryTypes.SELECT,
     });
+
+    for (let i = 0; i < queryResult.length; i++) {
+      if (queryResult[i].invitedId === userId) {
+        queryResult[i].invitedNickname = queryResult[i].nickname;
+        queryResult[i].invitedProfileImg = queryResult[i].profileImg;
+      }
+    }
+
     return queryResult;
   };
 
@@ -87,7 +95,7 @@ class DiaryRepository {
     const query = `SELECT Diaries.diaryId,couple,diaryName,outsideColor,insideColor,sticker,design,Diaries.userId,invitedId,Diaries.createdAt
     FROM Bookmark_diaries LEFT JOIN Diaries 
     On Diaries.userId = Bookmark_diaries.userId and Diaries.diaryId = Bookmark_diaries.diaryId
-    WHERE Diaries.userId = ${userId}
+    WHERE Diaries.userId = ${userId} or Diaries.invitedId = ${userId}
     ORDER BY Diaries.createdAt DESC`;
     const queryResult = await sequelize.query(query, {
       type: QueryTypes.SELECT,
@@ -96,8 +104,47 @@ class DiaryRepository {
   };
 
   //다이어리 초대수락
-  inviteDiary = async (userId, diaryId) => {
+  inviteAcceptDiary = async (userId, diaryId) => {
     await this.diaryModel.update({ invitedId: userId }, { where: { diaryId } });
+  };
+  //다이어리 초대
+  inviteDiary = async (invitedId, diaryId) => {
+    await this.diaryModel.update(
+      { invitedSecureId: invitedId },
+      { where: { diaryId } },
+    );
+  };
+
+  //공유 다이어리 조회
+  findShareDiary = async (userId) => {
+    const query = `select Diaries.diaryId, Diaries.userId,couple, diaryName,outsideColor,insideColor,sticker,design,nickname,profileImg,invitedId,
+    (select nickname from Users  where userId = Diaries.invitedId) as invitedNickname,
+    (select profileImg from Users  where userId = Diaries.invitedId) as invitedProfileImg
+    from Diaries 
+    LEFT JOIN Users
+    On Diaries.userId = Users.userId
+    WHERE couple= 1 and (Diaries.userId = ${userId} or Diaries.invitedId = ${userId}) 
+   `;
+
+    const queryResult = await sequelize.query(query, {
+      type: QueryTypes.SELECT,
+    });
+
+    for (let i = 0; i < queryResult.length; i++) {
+      if (queryResult[i].invitedId === userId) {
+        let changeNickname = queryResult[i].invitedNickname;
+        let changeProfileImg = queryResult[i].invitedProfileImg;
+        queryResult[i].invitedNickname = queryResult[i].nickname;
+        queryResult[i].nickname = changeNickname;
+        queryResult[i].invitedProfileImg = queryResult[i].profileImg;
+        queryResult[i].profileImg = changeProfileImg;
+      }
+      if (queryResult[i].invitedNickname === null) {
+        queryResult[i] = null;
+      }
+    }
+
+    return queryResult;
   };
 }
 
