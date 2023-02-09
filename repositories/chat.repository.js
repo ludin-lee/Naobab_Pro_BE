@@ -7,7 +7,7 @@ class ChatRepository {
     this.usersModel = UsersModel;
   }
   //대화내용 불러오기
-  showChat = async (diaryId) => {
+  showChat = async (diaryId, page) => {
     return await this.chatsModel.findAll({
       include: [
         {
@@ -16,8 +16,25 @@ class ChatRepository {
         },
       ],
       where: { diaryId },
-      order: [['createdAt', 'DESC']],
+      order: [['ChatId', 'DESC']],
+      limit: 10,
+      offset: 10 * (page - 1),
     });
+  };
+
+  showLastChat = async (diaryId) => {
+    const chat = await this.chatsModel.findAll({
+      include: [
+        {
+          model: this.usersModel,
+          attributes: ['profileImg', 'nickname'],
+        },
+      ],
+      where: { diaryId },
+      order: [['createdAt', 'DESC']],
+      limit: 1,
+    });
+    return chat[0];
   };
 }
 

@@ -55,14 +55,14 @@ const io = require('socket.io')(server, {
 
 // 소켓 연결
 io.on('connection', (socket) => {
+  socket.on('join', (diaryId) => {
+    socket.join(diaryId);
+  });
   // 채팅 받아 저장 후, 전달
   socket.on('chat_message', async (data) => {
     let { message, diaryId, userId } = data;
-    socket.join(diaryId);
-
     const today = dayjs().tz().format('YYYY-MM-DD 00:00:00');
     const chatTime = new Date(today).setHours(new Date(today).getHours() - 9);
-    console.log(data);
     const [caseOne, caseTwo] = await Chats.findOrCreate({
       where: { diaryId, createdAt: { [Op.gt]: chatTime } },
       defaults: {
@@ -71,28 +71,22 @@ io.on('connection', (socket) => {
         chat: `${dayjs(today).format('YYYY년 MM월 DD일')}`,
       },
     });
-    if (caseTwo) io.to(diaryId).emit(today);
 
-    //채팅 내용 저장
-    await Chats.create({ diaryId, userId, chat: message });
+    if (caseTwo) socket.to(diaryId).emit('receiveTime', today);
 
-    const userInfo = await Users.findOne({ where: { userId } });
-    const diary = await Diaries.findOne({ where: { diaryId } });
-
-    const audienceId = diary.userId === userId ? diary.invitedId : diary.userId;
-    const audienceUserInfo = await Users.findOne({ where: { audienceId } });
     // 채팅 보내주기
+    const userInfo = await Users.findOne({ where: { userId } });
     let newMessage = {
       diaryId,
       userId,
       message,
       profileImg: userInfo.profileImg,
       nickname: userInfo.nickname,
-      audienceId,
-      audienceProfileImg: audienceUserInfo.profileImg,
       time: dayjs(new Date()).format(),
     };
-    io.to(diaryId).emit('newMessage', newMessage); //채팅시 채팅방에 알림 생기게 프>론트에서 소켓 콜백함수를 조정해야함
+    socket.to(diaryId).emit('receiveMessage', newMessage); //채팅시 채팅방에 알림 생기게 프>론트에서 소켓 콜백함수를 조정해야함
+    //채팅 내용 저장
+    await Chats.create({ diaryId, userId, chat: message });
   });
 
   // 초대 알림
