@@ -144,7 +144,11 @@ class DiaryRepository {
       }
     }
 
-    return queryResult;
+    let newArr = queryResult.filter((element) => {
+      return element !== undefined && element !== null;
+    });
+
+    return newArr;
   };
 }
 

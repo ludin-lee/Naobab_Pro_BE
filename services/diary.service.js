@@ -1,6 +1,8 @@
 const DiaryRepository = require('../repositories/diary.repository');
 const NotificationRepository = require('../repositories/notification.repository');
-const { Diaries, Notifications } = require('../models');
+const ChatRepository = require('../repositories/chat.repository');
+const { Diaries, Notifications, Chats, Users } = require('../models');
+const moment = require('moment');
 
 const {
   NotFoundError,
@@ -12,6 +14,7 @@ const {
 class DiaryService {
   diaryRepository = new DiaryRepository(Diaries);
   notificationRepository = new NotificationRepository(Notifications);
+  chatRepository = new ChatRepository(Chats, Users);
   //다이어리 생성
   createDiary = async (
     userId,
@@ -127,6 +130,15 @@ class DiaryService {
   findShareDiary = async (userId) => {
     const diary = await this.diaryRepository.findShareDiary(userId);
 
+    for (let i in diary) {
+      let lastChat = await this.chatRepository.showLastChat(124);
+      diary[i].lastChat =
+        lastChat !== (null || undefined)
+          ? lastChat.chat
+          : '최근 채팅이 없습니다.';
+      diary[i].time =
+        lastChat !== (null || undefined) ? lastChat.createdAt : null;
+    }
     return diary;
   };
 }

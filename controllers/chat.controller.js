@@ -6,13 +6,17 @@ class ChatController {
 
   // 대화내용 가져오기
   showChat = async (req, res) => {
-    const { diaryId } = req.params;
+    const { diaryId, page } = req.params;
     const userId = res.locals.userId - SECRET_SUM;
 
     try {
-      const Chats = await this.chatService.showChat(diaryId, userId);
+      const { chatInfo, isLast } = await this.chatService.showChat(
+        diaryId,
+        userId,
+        page,
+      );
 
-      return res.status(200).json({ Chats });
+      return res.status(200).json({ Chats: chatInfo, isLast });
     } catch (err) {
       logger.error(err.message || err);
       return res.status(err.status || 500).json({
