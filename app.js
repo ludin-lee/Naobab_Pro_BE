@@ -1,33 +1,16 @@
-const express = require('express');
 const dotenv = require('dotenv');
 dotenv.config();
+const express = require('express');
+const session = require('express-session');
+const passport = require('passport');
 const router = require('./routers');
 const app = express();
 const db = require('./models');
 const helmet = require('helmet');
 const logger = require('./config/loggers');
 const cors = require('cors');
-// const https = require('https');
-// const fs = require('fs');
-
-// const privateKey = fs.readFileSync(
-//   '/etc/letsencrypt/live/mylee.site/privkey.pem',
-//   'utf8',
-// );
-// const certificate = fs.readFileSync(
-//   '/etc/letsencrypt/live/mylee.site/cert.pem',
-//   'utf8',
-// );
-// const ca = fs.readFileSync(
-//   '/etc/letsencrypt/live/mylee.site/chain.pem',
-//   'utf8',
-// );
-
-// const credentials = {
-//   key: privateKey,
-//   cert: certificate,
-//   ca: ca,
-// };
+const passportConfig = require('./passport');
+const port = process.env.PORT;
 
 // 미들웨어 통과하는 순서를 첫 번째로
 app.use(
@@ -36,6 +19,18 @@ app.use(
     credentials: true, // default: false
   }),
 );
+
+passportConfig();
+app.use(express.json());
+app.use(
+  session({
+    resave: false,
+    saveUninitialized: false,
+    secret: process.env.SESSION_SECRET,
+  }),
+);
+app.use(passport.initialize());
+app.use(passport.session()); // req.session 객체에 passport정보를 추가 저장
 
 // db 연결 확인
 db.sequelize
@@ -56,18 +51,7 @@ app.use(helmet.xssFilter());
 
 //CSRF
 
-const port = process.env.PORT;
-app.use(express.json());
-
 app.use('/api', express.urlencoded({ extended: false }));
 app.use('/api', router);
 
-app.listen(port, () => {
-  console.log(port, ' server is opened');
-});
-
-// const httpsServer = https.createServer(credentials, app);
-
-// httpsServer.listen(process.env.HTTPSPORT, () => {
-//   console.log('HTTPS Server running on port 4433');
-// });
+module.exports = app;

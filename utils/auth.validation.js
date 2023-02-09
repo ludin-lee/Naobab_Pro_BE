@@ -1,6 +1,6 @@
 const Joi = require('joi');
 
 exports.loginRequestSchema = Joi.object().keys({
-  username: Joi.string().required(),
-  password: Joi.string().required(),
+  email: Joi.string().email().required(),
+  password: Joi.string().min(1).max(20).required(),
 });
