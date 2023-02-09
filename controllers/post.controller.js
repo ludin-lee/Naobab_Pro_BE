@@ -28,7 +28,7 @@ class PostController {
 
       return res
         .status(201)
-        .json({ message: '일기장 생성 성공', result: true });
+        .json({ message: '일기장 생성 성공', result: true, diaryId });
     } catch (err) {
       logger.error(err.message || err);
       return res.status(err.status || 500).json({
